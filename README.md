@@ -1,7 +1,7 @@
 # Projeto de Desenvolvimento de Software
-# ------PROJECT NAME------
+# Kairos
 
-Este repositório contém o desenvolvimento da aplicação **PROJECT NAME**, um projeto da UC de Projeto de Desenvolvimento de Software - 5º semestre (2026/2027).
+Este repositório contém o desenvolvimento da aplicação **Kairos**, um projeto da UC de Projeto de Desenvolvimento de Software - 5º semestre (2026/2027).
 
 ## Links Importantes
 - [Relatório v1 em Markdown]()
