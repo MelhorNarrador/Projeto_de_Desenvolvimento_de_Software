@@ -12,6 +12,8 @@
 
 ![Logo da Kairos](Images/Logo_Kairos_NoBG.png)
 
+<div style="page-break-after: always;"></div>
+
 ---
 
 ## Palavras-chave
