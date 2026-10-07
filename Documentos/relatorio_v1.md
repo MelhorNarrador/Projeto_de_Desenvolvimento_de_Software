@@ -10,7 +10,7 @@
 
 ---
 
-![Logo do [NOME]](imgs/logo.png)
+![Logo da Kairos](Images/Logo_Kairos_NoBG.png)
 
 ---
 
