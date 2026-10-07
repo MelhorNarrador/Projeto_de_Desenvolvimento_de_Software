@@ -1,7 +1,9 @@
 # Projeto de Desenvolvimento de Software
 # Kairos - Despacho Inteligente de Meios de Emergência num Sistema Distribuído 
 
-Este repositório contém o desenvolvimento da aplicação **Kairos**, um projeto da UC de Projeto de Desenvolvimento de Software - 5º semestre (2026/2027).
+Este repositório contém o desenvolvimento da aplicação **Kairos**, um projeto da UC de Projeto de Desenvolvimento de Software - 5º semestre (2026/2027).  
+Grupo: 08  
+Membros: Pedro António - 20241273, Francisco Abecasis - 20240120, Mateus Reis - 20241799, Deolindo Soares - 20221446  
 
 ## Links Importantes
 - [Relatório v1 em Markdown]()
