@@ -10,7 +10,7 @@
 
 ---
 
-![Logo da Kairos](Images/Logo_Kairos_NoBG.png)
+<img src="Imagens/Logo_Kairos_NoBG.png" alt="UMLv1" width="2000">
 
 <div style="page-break-after: always;"></div>
 
@@ -183,7 +183,7 @@ A **Kairos** diferencia-se por combinar, num só sistema:
 
 ### 7.4 Modelo de Domínio
 
-<img src="Images/uml_dominio_V1.svg" alt="UMLv1" width="2000">
+<img src="Imagens/uml_dominio_V1.svg" alt="UMLv1" width="2000">
 
 ### 7.5 Escala de Gravidade
 
