@@ -6,7 +6,7 @@ Grupo: 08
 Membros: Pedro António - 20241273, Francisco Abecasis - 20240120, Mateus Reis - 20241799, Deolindo Soares - 20221446  
 
 ## Links Importantes
-- [Info.md]()
+- [Info.md](https://github.com/MelhorNarrador/Projeto_de_Desenvolvimento_de_Software/blob/main/Projeto_Kairos/00_Identificacao/info.md)
 - [Memoria.md]()
 - [Relatório v1 em Markdown](https://github.com/MelhorNarrador/Projeto_de_Desenvolvimento_de_Software/blob/main/Projeto_Kairos/04_Documentacao_Tecnica/relatorio_v1.md)
 - [Relatório v1 em PDF]()
