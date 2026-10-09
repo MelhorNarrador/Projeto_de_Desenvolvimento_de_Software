@@ -46,10 +46,11 @@ O quadro é gerido no **Trello** o que garante a rastreabilidade de todo o traba
 | Coluna | Significado |
 |---|---|
 | **Backlog** | Tarefas identificadas, ainda não priorizadas |
-| **A fazer** | Tarefas priorizadas para o marco atual, prontas a ser iniciadas |
-| **Em curso** | Tarefas em desenvolvimento, com um responsável atribuído |
-| **Em revisão** | Tarefa concluída, espera por testes e revisão por outro elemento |
-| **Concluído** | Tarefa revista e integrada no ramo principal |
+| **To Do** | Tarefas priorizadas para o marco atual, prontas a ser iniciadas |
+| **Doing** | Tarefas em desenvolvimento, com um responsável atribuído |
+| **Blocked** | Tarefa bloqueada, espera por ajuda de outro elemento ou finalização de outra tarefa |
+| **In Review** | Tarefa concluída, espera por testes e revisão por outro elemento |
+| **Done** | Tarefa revista e integrada no ramo principal |
 
 ### 2.2 Regras de Trabalho
 
