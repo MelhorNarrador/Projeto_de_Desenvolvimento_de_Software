@@ -213,7 +213,7 @@ O sistema corre num cluster **Kubernetes** com **três nós**, cada um numa máq
 ### 8.2 Componentes
 
 | Camada | Componente | Função | Mecanismo de redundância |
-|---|---|---|---|---|
+|---|---|---|---|
 | Entrada | **Ingress (Traefik)** | Ponto de entrada HTTPS, encaminha pedidos para o frontend e a API | Exposto em todos os nós, pods em nós diferentes |
 | Cliente | **Frontend** (React + Leaflet) | Interface web responsiva | `Deployment` com 2 réplicas |
 | Serviços | **API** (FastAPI) | Autenticação, ocorrências, rotas (A*), WebSockets | `Deployment` stateless, `Service` distribui os pedidos |
