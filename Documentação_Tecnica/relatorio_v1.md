@@ -10,7 +10,7 @@
 
 ---
 
-<img src="../Imagens/Logo_Kairos_NoBG.png" alt="LogoKairosNoBg" width="1000">
+<img src="../Imagens/Logo_Kairos_NoBG.png" alt="LogoKairosNoBg" width="500">
 
 <div style="page-break-after: always;"></div>
 
