@@ -375,10 +375,7 @@ Sempre que é registada uma ocorrência, a API corre o CSP sobre as ocorrências
 
 ### 15.2 Gráfico de Gantt
 
-**Gantt**: [Gráfico de Gantt](LINK_GANTT)
-
-![Gantt do Projeto](imgs/gantt.png)
-
+ <img src="Gantt_09_10.svg" alt="Gantt V1" width="700">
 
 ### 15.3 Riscos
 
