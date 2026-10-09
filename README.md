@@ -17,6 +17,6 @@ Membros: Pedro António - 20241273, Francisco Abecasis - 20240120, Mateus Reis -
 - [Trello (Plataforma de organização)]()
   
 ## Estrutura
-- **/Documentos** → Relatórios (Individuais e de Projeto), PDF e .md, imagens, manual de utilizador e apresentações
+- **/Projeto_Kairos** → Identificação, memoria descritiva, imagens, videos, documentação tecnica, artefactos, dados investigação, autorizações
 - **/Src** → Código da aplicação
-- **/sql** → Ficheiros para creação da base de dados com, create, populate e queries de exemplo
+- **/sql** → Ficheiros para criação da base de dados com, create, populate e queries de exemplo
