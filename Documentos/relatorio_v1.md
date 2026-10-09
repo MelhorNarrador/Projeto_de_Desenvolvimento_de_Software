@@ -6,7 +6,7 @@
 **Elementos do Grupo**: Pedro António - 20241273, Mateus Reis - 20241799, Francisco Abecasis - 20240120, Deolindo Soares - 20221446
 
 **GitHub**: [Repositório GitHub](LINK_GITHUB)  
-**Trello**: [Espaço ClickUp](LINK_CLICKUP)  
+**Trello**: [Trello](LINK_CLICKUP)  
 
 ---
 
