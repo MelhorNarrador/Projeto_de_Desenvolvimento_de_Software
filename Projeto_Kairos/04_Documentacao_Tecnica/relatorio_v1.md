@@ -219,7 +219,7 @@ Os três nós são servidores k3s com etcd embutido, pelo que a perda de um nó 
 |---|---|---|---|
 | Entrada | **Ingress (Traefik)** | Ponto de entrada HTTPS, encaminha pedidos para o frontend e a API | 2 réplicas em nós diferentes. O serviço é exposto em todos os nós, pelo que qualquer nó aceita pedidos |
 | Cliente | **Frontend** (React + Leaflet) | Interface web responsiva | `Deployment` com 2 réplicas |
-| Serviços | **API** (FastAPI) | Autenticação, ocorrências, rotas (A*), WebSockets | `Deployment` stateless, `Service` distribui os pedidos com 3 replicas |
+| Serviços | **API** (FastAPI) | Autenticação, ocorrências, rotas (A*), WebSockets | `Deployment` stateless com 3 réplicas, o `Service` distribui os pedidos |
 | Dados | **PostgreSQL** | Ocorrências, unidades, atribuições, utilizadores, auditoria| **CloudNativePG** com 3 instâncias (1 primária + 2 réplicas, uma por nó): replicação em streaming, réplica síncrona e failover automático |
 | Testes | **Simulador** | Gera ocorrências e movimento de unidades| --- |
 
@@ -243,7 +243,7 @@ A BD funciona simultaneamente como armazenamento e como fila de trabalho: uma oc
 | **API stateless** com autenticação **JWT** | Qualquer instância atende qualquer pedido, a falha de uma instância não termina sessões |
 | **Base de dados replicada** | Todas as garantias necessárias são asseguradas pela BD |
 | **Réplica síncrona** no PostgreSQL | Uma transação só é confirmada depois de existir também na réplica, pelo que o failover não perde dados confirmados |
-| **Consistência forte** nas atribuições | Impede que um meio seja atribuído duas vezes |
+| **Consistência forte** nas atribuições | O CSP decide a atribuição segundo os critérios de desempate (11.1), mas é a BD que garante que um meio não é atribuído duas vezes. Se duas réplicas da API tentarem atribuir o mesmo meio ao mesmo tempo, só uma escrita tem sucesso, a outra réplica volta a correr o CSP com o estado atualizado |
 
 ---
 
