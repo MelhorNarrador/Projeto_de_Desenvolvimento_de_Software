@@ -6,7 +6,7 @@
 **Elementos do Grupo**: Pedro António - 20241273, Mateus Reis - 20241799, Francisco Abecasis - 20240120, Deolindo Soares - 20221446
 
 **GitHub**: [Repositório GitHub](https://github.com/MelhorNarrador/Projeto_de_Desenvolvimento_de_Software)  
-**Trello**: [Trello](LINK_CLICKUP)  
+**Trello**: [Trello](https://trello.com/invite/b/6ac8f867a984782bfd86969a/ATTI8f82f4240e1f515c5cfdc93e4f7387da96C105E2/projeto-kairos)  
 
 ---
 
