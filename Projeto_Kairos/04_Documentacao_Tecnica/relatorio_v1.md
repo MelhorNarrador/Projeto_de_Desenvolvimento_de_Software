@@ -56,9 +56,9 @@ O quadro é gerido no **Trello** o que garante a rastreabilidade de todo o traba
 
 | Regra | Descrição |
 |---|---|
-| **Limite de trabalho em curso (WIP)** | Cada elemento tem no máximo 2 tarefas em "Em curso" em simultâneo |
-| **Uma tarefa, uma issue** | Todo o trabalho é registado como issue no Trello, com responsável e etiquetas |
-| **Definição de concluído** | Uma tarefa só passa a "Concluído" quando o código ou documento está revisto, integrado e testado |
+| **Limite de trabalho em curso (WIP)** | Cada elemento tem no máximo 2 tarefas em "Doing" em simultâneo |
+| **Uma tarefa, um cartão** | Todo o trabalho é registado como cartões no Trello, com responsável e etiquetas |
+| **Definição de Done** | Uma tarefa só passa a "Done" quando o código ou documento está revisto, integrado e testado |
 | **Ponto de situação semanal** | Reunião curta com o quadro como base: o que avançou, o que está bloqueado e o que se segue |
 
 ### 2.3 Etiquetas
@@ -76,7 +76,7 @@ O quadro é gerido no **Trello** o que garante a rastreabilidade de todo o traba
 | **Entrega 2 – Protótipo** | 15/11/2026 | Cluster Kubernetes, backend replicado, CSP e A* funcionais, primeiros testes de falha, relatório v2 |
 | **Entrega 3 – Versão final** | 20/12/2026 | Frontend completo, segurança, testes de falha automatizados, demonstração, relatório final |
 
-Cada marco agrupa as issues que têm de estar concluídas até à respetiva data, permitindo acompanhar no Trello a percentagem de trabalho concluído em cada entrega.
+Cada marco agrupa os cartões que têm de estar concluídas até à respetiva data, permitindo acompanhar no Trello a percentagem de trabalho concluído em cada entrega.
 
 Este relatório corresponde ao marco **Entrega 1**.  
 
@@ -165,16 +165,15 @@ A **Kairos** diferencia-se por combinar, num só sistema:
 | RF10 | Gestão de unidades e utilizadores (administrador) |
 | RF11 | Registo de auditoria de todas as atribuições e informações relevantes |
 | RF12 | O serviço mantém-se disponível perante a falha de qualquer componente individual ou de uma máquina do cluster |
-| RF13 | A falha de todas as réplicas de despacho de um distrito não deixa esse distrito sem despacho |
-| RF14 | Nenhuma ocorrência confirmada é perdida |
-| RF15 | Toda a comunicação externa é cifrada e o acesso é controlado por perfil |
-| RF16 | Os dados pessoais das vítimas são cifrados na base de dados e só são visíveis a quem trata a ocorrência |
+| RF13 | Nenhuma ocorrência confirmada é perdida |
+| RF14 | Toda a comunicação externa é cifrada e o acesso é controlado por perfil |
+| RF15 | Os dados pessoais das vítimas são cifrados na base de dados e só são visíveis a quem trata a ocorrência |
 
 ### 7.2 Requisitos Não Funcionais
 
 | ID | Categoria | Requisito |
 |---|---|---|
-| RNF01 | Desempenho | A proposta de atribuição é apresentada em menos de 10 segundos após o registo da ocorrência |
+| RNF01 | Desempenho | A proposta de atribuição é apresentada em menos de 2 segundos após o registo da ocorrência |
 | RNF02 | Tempo real | Alterações de estado chegam aos utilizadores interessados em menos de 1 segundo |
 | RNF03 | Recuperação | Após a falha de um componente, a redundância é reposta automaticamente |
 | RNF04 | Rastreabilidade | Todas as decisões de atribuição ficam registadas com autor e data |
@@ -216,7 +215,7 @@ O sistema corre num cluster **Kubernetes** com **três nós**, cada um numa máq
 |---|---|---|---|
 | Entrada | **Ingress (Traefik)** | Ponto de entrada HTTPS, encaminha pedidos para o frontend e a API | Exposto em todos os nós, pods em nós diferentes |
 | Cliente | **Frontend** (React + Leaflet) | Interface web responsiva | `Deployment` com 2 réplicas |
-| Serviços | **API** (FastAPI) | Autenticação, ocorrências, rotas (A*), WebSockets | `Deployment` stateless, `Service` distribui os pedidos |
+| Serviços | **API** (FastAPI) | Autenticação, ocorrências, rotas (A*), WebSockets | `Deployment` stateless, `Service` distribui os pedidos com 2 replicas |
 | Dados | **PostgreSQL** | Ocorrências, unidades, atribuições, utilizadores, auditoria| **CloudNativePG**: replicação em streaming, réplica síncrona e failover automático |
 | Testes | **Simulador** | Gera ocorrências e movimento de unidades| --- |
 
@@ -240,7 +239,7 @@ A BD funciona simultaneamente como armazenamento e como fila de trabalho: uma oc
 | **API stateless** com autenticação **JWT** | Qualquer instância atende qualquer pedido, a falha de uma instância não termina sessões |
 | **Base de dados replicada** | Todas as garantias necessárias são asseguradas pela BD |
 | **Réplica síncrona** no PostgreSQL | Uma transação só é confirmada depois de existir também na réplica, pelo que o failover não perde dados confirmados |
-| **Consistência forte** nas atribuições | Impede que um meio seja atribuído duas vezes, |
+| **Consistência forte** nas atribuições | Impede que um meio seja atribuído duas vezes |
 
 ---
 
