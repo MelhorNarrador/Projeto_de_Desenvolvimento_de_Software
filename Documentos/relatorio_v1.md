@@ -5,7 +5,7 @@
 **Grupo 08**  
 **Elementos do Grupo**: Pedro António - 20241273, Mateus Reis - 20241799, Francisco Abecasis - 20240120, Deolindo Soares - 20221446
 
-**GitHub**: [Repositório GitHub](LINK_GITHUB)  
+**GitHub**: [Repositório GitHub](https://github.com/MelhorNarrador/Projeto_de_Desenvolvimento_de_Software)  
 **Trello**: [Trello](LINK_CLICKUP)  
 
 ---
