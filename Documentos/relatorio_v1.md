@@ -183,7 +183,7 @@ A **Kairos** diferencia-se por combinar, num só sistema:
 
 ### 7.4 Modelo de Domínio
 
-**WIP** 
+<img src="Images/uml_dominio_V1.svg" alt="UMLv1" width="2000">
 
 ### 7.5 Escala de Gravidade
 
