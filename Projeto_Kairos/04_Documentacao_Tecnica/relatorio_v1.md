@@ -181,7 +181,7 @@ A **Kairos** diferencia-se por combinar, num só sistema:
 
 ### 7.3 Casos de Uso
 
-**WIP** 
+<img src="casos_de_uso_V1.svg" alt="Diagrama de casos de uso v1" width="700">
 
 ### 7.4 Modelo de Domínio
 
