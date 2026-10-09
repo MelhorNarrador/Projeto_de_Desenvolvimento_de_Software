@@ -119,7 +119,7 @@ Os sistemas de despacho são um exemplo claro de sistema onde a **distribuição
 
 | Ator | Descrição | Necessidade principal |
 |---|---|---|
-| **Operador da central** | Recebe chamadas e regista ocorrências; supervisiona o estado de todas as unidades | Ver rapidamente que unidade enviar e confirmar a atribuição |
+| **Operador da central** | Recebe chamadas e regista ocorrências, supervisiona o estado de todas as unidades | Ver rapidamente que unidade enviar e confirmar a atribuição |
 | **Unidade de socorro** | Tripulação de ambulância, bombeiros ou polícia | Receber a missão, a rota e atualizar o seu estado (a caminho, no local, disponível) |
 | **Administrador** | Gere utilizadores, unidades e bases | Configurar o sistema e consultar o registo de auditoria|
 
@@ -132,8 +132,8 @@ Os sistemas de despacho assistido por computador (**CAD – Computer-Aided Dispa
 | Solução | Pontos fortes | Limitações | Oportunidade para a Kairos |
 |---|---|---|---|
 | **Sistemas CAD comerciais** | Completos, integrados com comunicações rádio e telefone | Soluções proprietárias, de custo elevado e pouco transparentes | Demonstrar os mecanismos de decisão e de tolerância a faltas de forma aberta |
-| **Despacho manual com mapa** | Simples, controlado pelo operador | Decisão dependente da experiência; sem estimativa de tempos reais | Proposta automática baseada em tempos de chegada calculados |
-| **Atribuição pela unidade mais próxima** | Rápida e fácil de implementar | Decisão isolada por ocorrência; ignora prioridades e cobertura | Decisão conjunta de várias ocorrências, com reatribuição por prioridade |
+| **Despacho manual com mapa** | Simples, controlado pelo operador | Decisão dependente da experiência. Sem estimativa de tempos reais | Proposta automática baseada em tempos de chegada calculados |
+| **Atribuição pela unidade mais próxima** | Rápida e fácil de implementar | Decisão isolada por ocorrência, ignora prioridades e cobertura | Decisão conjunta de várias ocorrências, com reatribuição por prioridade |
 
 A **Kairos** diferencia-se por combinar, num só sistema:
 
@@ -213,7 +213,7 @@ O sistema corre num cluster **Kubernetes** com **três nós**, cada um numa máq
 |---|---|---|---|---|
 | Entrada | **Ingress (Traefik)** | Ponto de entrada HTTPS, encaminha pedidos para o frontend e a API | Exposto em todos os nós, pods em nós diferentes |
 | Cliente | **Frontend** (React + Leaflet) | Interface web responsiva | `Deployment` com 2 réplicas |
-| Serviços | **API** (FastAPI) | Autenticação, ocorrências, rotas (A*), WebSockets | `Deployment` stateless; `Service` distribui os pedidos |
+| Serviços | **API** (FastAPI) | Autenticação, ocorrências, rotas (A*), WebSockets | `Deployment` stateless, `Service` distribui os pedidos |
 | Dados | **PostgreSQL** | Ocorrências, unidades, atribuições, utilizadores, auditoria| **CloudNativePG**: replicação em streaming, réplica síncrona e failover automático |
 | Testes | **Simulador** | Gera ocorrências e movimento de unidades| --- |
 
@@ -250,7 +250,7 @@ A BD funciona simultaneamente como armazenamento e como fila de trabalho: uma oc
 | **Falhas simultâneas suportadas** | A falha de **uma máquina do cluster** (e de todos os pods que nela correm) |
 | **Funcionalidades disponíveis após a falha** | Todas: registo de ocorrências, atribuição, rotas, mapa em tempo real e vista das unidades |
 | **Deteção da falha** | *Probes* do Kubernetes nos pods. Estado *NotReady* dos nós. Monitorização da primária pelo CloudNativePG |
-| **Recuperação ou substituição** | O Kubernetes recria os pods em falha, noutro nó se necessário; o tráfego deixa de ser enviado para pods em falha; o CloudNativePG promove a réplica a primária |
+| **Recuperação ou substituição** | O Kubernetes recria os pods em falha, noutro nó se necessário, o tráfego deixa de ser enviado para pods em falha, o CloudNativePG promove a réplica a primária |
 | **Informação que pode ser perdida** | Nenhuma ocorrência ou atribuição **confirmada**. Um pedido em curso no momento da falha pode falhar e o operador repete-o. Avisos em tempo real emitidos durante a falha podem perder-se, mas o cliente recupera o estado atual ao religar. A última posição de um meio pode perder-se, sendo substituída pela seguinte |
 | **Consistência entre réplicas** | Réplica síncrona do PostgreSQL |
 
