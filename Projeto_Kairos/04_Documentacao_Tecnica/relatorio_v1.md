@@ -76,7 +76,7 @@ O quadro é gerido no **Trello** o que garante a rastreabilidade de todo o traba
 | **Entrega 2 – Protótipo** | 15/11/2026 | Cluster Kubernetes, backend replicado, CSP e A* funcionais, primeiros testes de falha, relatório v2 |
 | **Entrega 3 – Versão final** | 20/12/2026 | Frontend completo, segurança, testes de falha automatizados, demonstração, relatório final |
 
-Cada marco agrupa os cartões que têm de estar concluídas até à respetiva data, permitindo acompanhar no Trello a percentagem de trabalho concluído em cada entrega.
+Cada marco agrupa os cartões que têm de estar concluídos até à respetiva data, permitindo acompanhar no Trello a percentagem de trabalho concluído em cada entrega.
 
 Este relatório corresponde ao marco **Entrega 1**.  
 
@@ -164,10 +164,8 @@ A **Kairos** diferencia-se por combinar, num só sistema:
 | RF09 | Atualização periódica da posição das unidades |
 | RF10 | Gestão de unidades e utilizadores (administrador) |
 | RF11 | Registo de auditoria de todas as atribuições e informações relevantes |
-| RF12 | O serviço mantém-se disponível perante a falha de qualquer componente individual ou de uma máquina do cluster |
-| RF13 | Nenhuma ocorrência confirmada é perdida |
-| RF14 | Toda a comunicação externa é cifrada e o acesso é controlado por perfil |
-| RF15 | Os dados pessoais das vítimas são cifrados na base de dados e só são visíveis a quem trata a ocorrência |
+| RF12 | Toda a comunicação externa é cifrada e o acesso é controlado por perfil |
+
 
 ### 7.2 Requisitos Não Funcionais
 
@@ -178,6 +176,10 @@ A **Kairos** diferencia-se por combinar, num só sistema:
 | RNF03 | Recuperação | Após a falha de um componente, a redundância é reposta automaticamente |
 | RNF04 | Rastreabilidade | Todas as decisões de atribuição ficam registadas com autor e data |
 | RNF05 | Usabilidade | Interface responsiva, utilizável em computador e no telemóvel da unidade |
+| RNF06 | Disponibilidade | O serviço mantém-se disponível perante a falha de qualquer componente individual ou de uma máquina do cluster |
+| RNF07 | Integridade | Nenhuma ocorrência confirmada é perdida |
+| RNF08 | Segurança | 	Toda a comunicação externa é cifrada e o acesso é controlado por perfil |
+| RNF09 | Privacidade | Os dados pessoais das vítimas são cifrados na base de dados e só são visíveis a quem trata a ocorrência |
 
 ### 7.3 Casos de Uso
 
@@ -207,16 +209,17 @@ Os tempos-alvo e os pesos são **definidos pelo grupo para este projeto**. Os te
 
 ### 8.1 Visão Geral
 
-O sistema corre num cluster **Kubernetes** com **três nós**, cada um numa máquina virtual distinta. Todos os nós executam serviços aplicacionais, e os componentes replicados são distribuídos por nós diferentes, de forma a que a perda de uma máquina não elimine todas as réplicas de um componente.
+O sistema corre num cluster **Kubernetes** com **três nós**, cada um numa máquina virtual distinta. Todos os nós executam serviços aplicacionais, e os componentes replicados são distribuídos por nós diferentes, de forma a que a perda de uma máquina não elimine todas as réplicas de um componente. 
+Os três nós são servidores k3s com etcd embutido, pelo que a perda de um nó não compromete a gestão do cluster.
 
 ### 8.2 Componentes
 
 | Camada | Componente | Função | Mecanismo de redundância |
 |---|---|---|---|
-| Entrada | **Ingress (Traefik)** | Ponto de entrada HTTPS, encaminha pedidos para o frontend e a API | Exposto em todos os nós, pods em nós diferentes |
+| Entrada | **Ingress (Traefik)** | Ponto de entrada HTTPS, encaminha pedidos para o frontend e a API | 2 réplicas em nós diferentes. O serviço é exposto em todos os nós, pelo que qualquer nó aceita pedidos |
 | Cliente | **Frontend** (React + Leaflet) | Interface web responsiva | `Deployment` com 2 réplicas |
-| Serviços | **API** (FastAPI) | Autenticação, ocorrências, rotas (A*), WebSockets | `Deployment` stateless, `Service` distribui os pedidos com 2 replicas |
-| Dados | **PostgreSQL** | Ocorrências, unidades, atribuições, utilizadores, auditoria| **CloudNativePG**: replicação em streaming, réplica síncrona e failover automático |
+| Serviços | **API** (FastAPI) | Autenticação, ocorrências, rotas (A*), WebSockets | `Deployment` stateless, `Service` distribui os pedidos com 3 replicas |
+| Dados | **PostgreSQL** | Ocorrências, unidades, atribuições, utilizadores, auditoria| **CloudNativePG**com 3 instâncias (1 primária + 2 réplicas, uma por nó): replicação em streaming, réplica síncrona e failover automático |
 | Testes | **Simulador** | Gera ocorrências e movimento de unidades| --- |
 
 ### 8.3 Fluxo Principal
@@ -268,7 +271,7 @@ A BD funciona simultaneamente como armazenamento e como fila de trabalho: uma oc
 | F4 | Máquina inteira | Nó passa a *NotReady* | Réplicas nos outros nós continuam a servir | Breve degradação | Nenhuma confirmada | Pods recriados nos outros nós |
 | F5 | Ligação de rede de uma unidade | Erro no envio | A unidade guarda o estado localmente | Posição desatualizada temporariamente | Nenhuma | Reenvia ao recuperar a ligação |
 
-Além das falhas, é demonstrado o cenário de **concorrência**: duas ocorrências registadas ao mesmo tempo, em réplicas diferentes, que disputam o mesmo meio. Só uma fica com ele e a outra recebe a melhor alternativa
+Além das falhas, é demonstrado o cenário de **concorrência**: duas ocorrências registadas ao mesmo tempo, em réplicas diferentes, que disputam o mesmo meio. Só uma fica com ele e a outra recebe a melhor alternativa.
 
 ---
 
@@ -278,7 +281,7 @@ A IA resolve dois problemas.
 
 ### 11.1 Atribuição de Meios - CSP
 
-Sempre que é registada uma ocorrência, a API corre o CSP sobre as ocorrências pendentes desse distrito.
+Sempre que é registada uma ocorrência, e periodicamente a cada 30 segundos, a API corre o CSP sobre as ocorrências pendentes desse distrito. A execução periódica garante que uma ocorrência que ficou pendente por falha de uma réplica é retomada.
 
 | Elemento | Descrição |
 |---|---|
@@ -329,7 +332,7 @@ Sempre que é registada uma ocorrência, a API corre o CSP sobre as ocorrências
 | **Backend** | Python, FastAPI |
 | **Inteligência Artificial** | Python, OSMnx (obtenção do grafo de estradas) |
 | **Base de Dados** | PostgreSQL, CloudNativePG |
-| **Infraestrutura** | Docker, Kubernetes, Traefik |
+| **Infraestrutura** | Docker, Kubernetes (K3s), Traefik |
 | **Ferramentas** | GitHub, Trello, VSCode, Postman, Discord |
 
 ---
