@@ -164,7 +164,6 @@ A **Kairos** diferencia-se por combinar, num só sistema:
 | RF09 | Atualização periódica da posição das unidades |
 | RF10 | Gestão de unidades e utilizadores (administrador) |
 | RF11 | Registo de auditoria de todas as atribuições e informações relevantes |
-| RF12 | Toda a comunicação externa é cifrada e o acesso é controlado por perfil |
 
 
 ### 7.2 Requisitos Não Funcionais
@@ -209,6 +208,8 @@ Os tempos-alvo e os pesos são **definidos pelo grupo para este projeto**. Os te
 
 ### 8.1 Visão Geral
 
+<img src="uml_dominio_V1.svg" alt="Diagrama de Arquitetura" width="700">  
+
 O sistema corre num cluster **Kubernetes** com **três nós**, cada um numa máquina virtual distinta. Todos os nós executam serviços aplicacionais, e os componentes replicados são distribuídos por nós diferentes, de forma a que a perda de uma máquina não elimine todas as réplicas de um componente. 
 Os três nós são servidores k3s com etcd embutido, pelo que a perda de um nó não compromete a gestão do cluster.
 
@@ -219,7 +220,7 @@ Os três nós são servidores k3s com etcd embutido, pelo que a perda de um nó 
 | Entrada | **Ingress (Traefik)** | Ponto de entrada HTTPS, encaminha pedidos para o frontend e a API | 2 réplicas em nós diferentes. O serviço é exposto em todos os nós, pelo que qualquer nó aceita pedidos |
 | Cliente | **Frontend** (React + Leaflet) | Interface web responsiva | `Deployment` com 2 réplicas |
 | Serviços | **API** (FastAPI) | Autenticação, ocorrências, rotas (A*), WebSockets | `Deployment` stateless, `Service` distribui os pedidos com 3 replicas |
-| Dados | **PostgreSQL** | Ocorrências, unidades, atribuições, utilizadores, auditoria| **CloudNativePG**com 3 instâncias (1 primária + 2 réplicas, uma por nó): replicação em streaming, réplica síncrona e failover automático |
+| Dados | **PostgreSQL** | Ocorrências, unidades, atribuições, utilizadores, auditoria| **CloudNativePG** com 3 instâncias (1 primária + 2 réplicas, uma por nó): replicação em streaming, réplica síncrona e failover automático |
 | Testes | **Simulador** | Gera ocorrências e movimento de unidades| --- |
 
 ### 8.3 Fluxo Principal
