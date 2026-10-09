@@ -208,7 +208,7 @@ Os tempos-alvo e os pesos são **definidos pelo grupo para este projeto**. Os te
 
 ### 8.1 Visão Geral
 
-<img src="uml_dominio_V1.svg" alt="Diagrama de Arquitetura" width="700">  
+<img src="Diagrama_de_Arquitetura.svg" alt="Diagrama de Arquitetura" width="700">  
 
 O sistema corre num cluster **Kubernetes** com **três nós**, cada um numa máquina virtual distinta. Todos os nós executam serviços aplicacionais, e os componentes replicados são distribuídos por nós diferentes, de forma a que a perda de uma máquina não elimine todas as réplicas de um componente. 
 Os três nós são servidores k3s com etcd embutido, pelo que a perda de um nó não compromete a gestão do cluster.
