@@ -11,7 +11,7 @@
 ---
 
 <p align="center">
-  <img src="../Imagens/Logo_Kairos_NoBG.png" alt="Logo Kairos" width="700">
+  <img src="../02_Imagens/Logo_Kairos_NoBG.png" alt="Logo Kairos" width="700">
 </p>
 
 <div style="page-break-after: always;"></div>
