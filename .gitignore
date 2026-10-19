@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+
+# Node
+node_modules/
+dist/
+
+# Claude Code (personal settings)
+.claude/settings.local.json
+
+# OS
+.DS_Store
