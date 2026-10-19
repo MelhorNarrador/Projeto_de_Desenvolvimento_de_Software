@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: kairos_db
+      POSTGRES_USER: kairos
+      POSTGRES_PASSWORD: KairosSecurePassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./api/db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./api/db/seed.sql:/docker-entrypoint-initdb.d/02_seed.sql
+      - kairos_db:/var/lib/postgresql/data
+
+volumes:
+  kairos_db:
