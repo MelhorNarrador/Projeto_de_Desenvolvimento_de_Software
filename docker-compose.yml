@@ -11,6 +11,21 @@ services:
       - ./api/db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
       - ./api/db/seed.sql:/docker-entrypoint-initdb.d/02_seed.sql
       - kairos_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kairos -d kairos_db"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
+
+  api:
+    build: ./api
+    environment:
+      DATABASE_URL: postgresql://kairos:KairosSecurePassword@db:5432/kairos_db
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
   kairos_db:
