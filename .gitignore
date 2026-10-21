@@ -11,5 +11,8 @@ dist/
 # Claude Code (personal settings)
 .claude/settings.local.json
 
+# OSMnx download cache (scripts/export_graph.py)
+api/cache/
+
 # OS
 .DS_Store
