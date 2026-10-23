@@ -48,6 +48,6 @@ Clique nos links abaixo para navegar diretamente pelas pastas oficiais de docume
 ---
 
 ##  Estrutura de Código do Sistema Distribuído
-* [ api/](./api) — Código-fonte do servidor (Backend).
-* [ frontend/](./frontend) — Código-fonte da interface web/mobile.
-* [ docker-compose.yml](./docker-compose.yml)
+* [ api/](../api) — Código-fonte do servidor (Backend).
+* [ frontend/](../frontend) — Código-fonte da interface web/mobile.
+* [ docker-compose.yml](../docker-compose.yml)
