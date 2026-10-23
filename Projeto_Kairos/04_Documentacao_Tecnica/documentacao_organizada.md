@@ -38,7 +38,7 @@ Clique nos links abaixo para navegar diretamente pelas pastas oficiais de docume
 
 **Documentação Académica**
 * [**00_Identificação**](./00_Identificacao) — Dados e identificação geral do projeto.
-* [**01_Memória Descritiva**](./01_Memoria_Descritiva) — O conceito inicial e fundamentação do Kairós.
+* [01_Memória Descritiva](https://github.com/MelhorNarrador/Projeto_de_Desenvolvimento_de_Software/blob/main/Projeto_Kairos/01_Memoria_Descritiva/memoria.md#mem%C3%B3ria-descritiva---kairos) — O conceito inicial e fundamentação do Kairós.
 * [**02_Imagens**](./02_Imagens) — Assets visuais, diagramas e logótipos.
 * [**03_Vídeos**](./03_Videos) — Demonstrações e apresentações em vídeo.
 * [**04_Documentação Técnica**](./04_Documentacao_Tecnica) — Guião de arquitetura e índice detalhado (documentacao_organizada.md).
