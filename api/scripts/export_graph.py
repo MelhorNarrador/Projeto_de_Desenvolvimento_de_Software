@@ -14,6 +14,7 @@ BBOX = tuple(float(x) for x in os.environ.get("GRAPH_BBOX", "-9.25,38.48,-8.85,3
 OUT = "data/graph.json.gz"
 
 G = ox.graph_from_bbox(BBOX, network_type="drive")
+G = ox.truncate.largest_component(G, strongly=True)
 G = ox.add_edge_speeds(G, fallback=50)
 G = ox.add_edge_travel_times(G)
 

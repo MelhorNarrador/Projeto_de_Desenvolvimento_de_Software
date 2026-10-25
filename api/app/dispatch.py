@@ -44,6 +44,25 @@ async def run_dispatch(district_id):
             return
 
 
+running = set()
+dirty = set()
+
+
+async def request_dispatch(district_id):
+    if district_id in running:
+        dirty.add(district_id)
+        return
+    running.add(district_id)
+    try:
+        while True:
+            dirty.discard(district_id)
+            await run_dispatch(district_id)
+            if district_id not in dirty:
+                return
+    finally:
+        running.discard(district_id)
+
+
 class Conflict(Exception):
     pass
 
@@ -89,6 +108,6 @@ async def pending_check():
                 cur = await conn.execute("SELECT DISTINCT district_id FROM incident WHERE status = 'pending'")
                 districts = [row["district_id"] for row in await cur.fetchall()]
             for district_id in districts:
-                await run_dispatch(district_id)
+                await request_dispatch(district_id)
         except Exception:
             log.exception("pending check failed")

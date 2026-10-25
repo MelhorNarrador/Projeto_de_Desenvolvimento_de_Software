@@ -16,7 +16,7 @@ def load_graph(path=GRAPH_FILE):
     adj = [[] for _ in coords] 
     for u, v, seconds in data["edges"]:
         adj[u].append((v, seconds))
-    return {"coords": coords, "adj": adj, "max_speed": data["max_speed_kph"] / 3.6}
+    return {"coords": coords, "adj": adj, "max_speed": data["max_speed_kph"] / 3.6, "nearest": {}}
 
 
 def distance_m(a, b):
@@ -26,10 +26,15 @@ def distance_m(a, b):
 
 
 def nearest_node(graph, point):
-    lat, lon = point
-    k = math.cos(math.radians(lat))
-    coords = graph["coords"]
-    return min(range(len(coords)), key=lambda n: (coords[n][0] - lat) ** 2 + ((coords[n][1] - lon) * k) ** 2)
+    cache = graph["nearest"]
+    if point not in cache:
+        if len(cache) > 10_000:
+            cache.clear()
+        lat, lon = point
+        k = math.cos(math.radians(lat))
+        coords = graph["coords"]
+        cache[point] = min(range(len(coords)), key=lambda n: (coords[n][0] - lat) ** 2 + ((coords[n][1] - lon) * k) ** 2)
+    return cache[point]
 
 
 def heuristic(graph, node, goal):

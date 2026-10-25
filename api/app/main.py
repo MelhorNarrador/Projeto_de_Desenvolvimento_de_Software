@@ -114,7 +114,7 @@ async def create_incident(body: IncidentCreate, background: BackgroundTasks):
             (body.created_by, "create", "incident", incident["id"]),
         )
 
-    background.add_task(dispatch.run_dispatch, body.district_id)
+    background.add_task(dispatch.request_dispatch, body.district_id)
     return incident
 
 
@@ -139,7 +139,7 @@ async def start_shift(unit_id: int, body: ShiftStart, background: BackgroundTask
             (body.app_user_id, "start_shift", "unit", unit_id),
         )
 
-    background.add_task(dispatch.run_dispatch, shift["district_id"])
+    background.add_task(dispatch.request_dispatch, shift["district_id"])
     return shift
 
 
@@ -249,5 +249,5 @@ async def change_status(unit_id: int, body: StatusChange, background: Background
         )
 
     if body.status == "available":
-        background.add_task(dispatch.run_dispatch, unit["district_id"])
+        background.add_task(dispatch.request_dispatch, unit["district_id"])
     return unit
