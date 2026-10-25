@@ -1,17 +1,21 @@
+import asyncio
 from contextlib import asynccontextmanager
 from typing import Literal
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, BackgroundTasks
 from psycopg.types.json import Jsonb
 from pydantic import BaseModel, Field
 
 from app.db import pool
+from app import dispatch
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await pool.open()
+    checker = asyncio.create_task(dispatch.pending_check())
     yield
+    checker.cancel()
     await pool.close()
 
 
@@ -91,7 +95,7 @@ class IncidentCreate(BaseModel):
 
 
 @app.post("/incidents", status_code=201)
-async def create_incident(body: IncidentCreate):
+async def create_incident(body: IncidentCreate, background: BackgroundTasks):
     async with pool.connection() as conn:
         cur = await conn.execute(
             """
@@ -110,7 +114,8 @@ async def create_incident(body: IncidentCreate):
             (body.created_by, "create", "incident", incident["id"]),
         )
 
-        return incident
+    background.add_task(dispatch.run_dispatch, body.district_id)
+    return incident
 
 
 class ShiftStart(BaseModel):
@@ -118,7 +123,7 @@ class ShiftStart(BaseModel):
 
 
 @app.post("/units/{unit_id}/start-shift", status_code=200)
-async def start_shift(unit_id: int, body: ShiftStart):
+async def start_shift(unit_id: int, body: ShiftStart, background: BackgroundTasks):
     async with pool.connection() as conn:
         cur = await conn.execute(
         "UPDATE unit SET status = 'available', updated_at = NOW(), user_id = %s "
@@ -134,7 +139,8 @@ async def start_shift(unit_id: int, body: ShiftStart):
             (body.app_user_id, "start_shift", "unit", unit_id),
         )
 
-        return shift
+    background.add_task(dispatch.run_dispatch, shift["district_id"])
+    return shift
 
 
 @app.post("/units/{unit_id}/end-shift")
@@ -193,7 +199,7 @@ PREVIOUS_STATUS = {"en_route": "assigned", "on_scene": "en_route", "available": 
 
 
 @app.patch("/units/{unit_id}/status")
-async def change_status(unit_id: int, body: StatusChange):
+async def change_status(unit_id: int, body: StatusChange, background: BackgroundTasks):
     params = {
         "unit_id": unit_id,
         "user_id": body.app_user_id,
@@ -242,4 +248,6 @@ async def change_status(unit_id: int, body: StatusChange):
             (body.app_user_id, "change_status", "unit", unit_id, Jsonb({"status": body.status})),
         )
 
-        return unit
+    if body.status == "available":
+        background.add_task(dispatch.run_dispatch, unit["district_id"])
+    return unit
