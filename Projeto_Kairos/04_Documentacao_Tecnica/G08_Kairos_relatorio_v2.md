@@ -386,9 +386,7 @@ Esta segunda fase do projeto, foi dedicada a desenvolver e materializar a infrae
 
 ## 16. Planeamento Tarefas - 2ª Entrega
 
-**Última atualização:** 26/10/2026
-
-Para garantir os objetivos da Entrega 2, o grupo organizou as tarefas técnicas no seguinte formato Kanban:
+Para garantir os objetivos da Entrega 2, as tarefas técnicas foram organizadas no seguinte formato Kanban:
 
 | Data | # | Tarefa |
 |---|---|---|
