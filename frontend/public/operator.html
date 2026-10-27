@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kairos — Operator</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <div class="panel">
+    <h1>Operator</h1>
+    <p><span id="who"></span> · <a href="#" id="logout">Sign out</a></p>
+
+    <h2>New incident</h2>
+    <label>Address <input id="address" autocomplete="off" placeholder="Start typing an address"></label>
+    <ul id="suggestions" class="suggestions"></ul>
+    <p id="location" class="muted">No address selected</p>
+    <label>Victim name <input id="victim"></label>
+    <label>Description <textarea id="description" rows="2"></textarea></label>
+    <label>Severity
+      <select id="severity">
+        <option value="1">1 — red</option>
+        <option value="2">2 — orange</option>
+        <option value="3" selected>3 — yellow</option>
+        <option value="4">4 — green</option>
+        <option value="5">5 — blue</option>
+      </select>
+    </label>
+    <button id="create">Create incident</button>
+    <p id="message"></p>
+
+    <h2>Open incidents</h2>
+    <ul id="incidents"></ul>
+  </div>
+  <div id="map"></div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="common.js"></script>
+<script src="operator.js"></script>
+</body>
+</html>

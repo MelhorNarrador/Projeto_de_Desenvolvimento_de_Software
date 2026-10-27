@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kairos — Sign in</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="home">
+  <form id="login" class="login">
+    <h1>Kairos</h1>
+    <label>Work email <input id="email" type="email" autocomplete="username" required></label>
+    <label>Password <input id="password" type="password" autocomplete="current-password" required></label>
+    <button type="submit">Sign in</button>
+    <p id="message" class="error"></p>
+  </form>
+<script src="common.js"></script>
+<script>
+  const PAGE_FOR_ROLE = { operator: "operator.html", crew: "crew.html" };
+
+  if (session()) location.href = PAGE_FOR_ROLE[session().user.role] || "index.html";
+
+  document.getElementById("login").onsubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const data = await api("/login", {
+        method: "POST",
+        body: { email: document.getElementById("email").value, password: document.getElementById("password").value },
+      });
+      if (!PAGE_FOR_ROLE[data.user.role]) throw new Error("This account has no access to this app.");
+      localStorage.setItem("kairos_session", JSON.stringify(data));
+      location.href = PAGE_FOR_ROLE[data.user.role];
+    } catch (err) {
+      document.getElementById("message").textContent = err.message;
+    }
+  };
+</script>
+</body>
+</html>

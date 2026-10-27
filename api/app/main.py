@@ -1,11 +1,14 @@
 import asyncio
+
 from contextlib import asynccontextmanager
 from typing import Literal
 
+import bcrypt
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from psycopg.types.json import Jsonb
 from pydantic import BaseModel, Field
 
+from app.ai import astar
 from app.db import pool
 from app import dispatch
 
@@ -81,6 +84,26 @@ async def get_incident(incident_id: int):
         if incident is None:
             raise HTTPException(status_code=404, detail="Incident not found")
         return incident
+
+
+class Login(BaseModel):
+    email: str
+    password: str
+
+
+@app.post("/login")
+async def login(body: Login):
+    async with pool.connection() as conn:
+        cur = await conn.execute(
+            "SELECT id, name, password_hash, role, district_id FROM app_user WHERE email = %s AND active",
+            (body.email,),
+        )
+        user = await cur.fetchone()
+    if user is None or not bcrypt.checkpw(body.password.encode(), user["password_hash"].encode()):
+        raise HTTPException(status_code=401, detail="Wrong email or password")
+    return {
+        "user": {"id": user["id"], "name": user["name"], "role": user["role"], "district_id": user["district_id"]},
+    }
 
 
 class IncidentCreate(BaseModel):
@@ -251,3 +274,21 @@ async def change_status(unit_id: int, body: StatusChange, background: Background
     if body.status == "available":
         background.add_task(dispatch.request_dispatch, unit["district_id"])
     return unit
+
+
+@app.get("/units/{unit_id}/route")
+async def unit_route(unit_id: int):
+    async with pool.connection() as conn:
+        cur = await conn.execute(
+            """
+            SELECT u.latitude, u.longitude, i.latitude AS incident_lat, i.longitude AS incident_lon
+            FROM unit u JOIN incident i ON i.id = u.incident_id
+            WHERE u.id = %s
+            """,
+            (unit_id,),
+        )
+        row = await cur.fetchone()
+    if row is None:
+        raise HTTPException(status_code=404, detail="Unit has no mission")
+    seconds, route = await asyncio.to_thread(astar.travel_time, dispatch.GRAPH, (row["latitude"], row["longitude"]), (row["incident_lat"], row["incident_lon"]))
+    return {"seconds": seconds, "route": route}

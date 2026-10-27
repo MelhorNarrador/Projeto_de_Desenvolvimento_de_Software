@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Kairos — Crew</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <div class="panel">
+    <h1>Crew</h1>
+    <p><span id="who"></span> · <a href="#" id="logout">Sign out</a></p>
+    <div id="content"></div>
+    <p id="message" class="error"></p>
+    <p class="muted">Demo: click the map to move the vehicle.</p>
+  </div>
+  <div id="map"></div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="common.js"></script>
+<script src="crew.js"></script>
+</body>
+</html>

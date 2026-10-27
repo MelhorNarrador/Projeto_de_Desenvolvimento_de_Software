@@ -1,0 +1,21 @@
+body { margin: 0; font-family: system-ui, sans-serif; font-size: 14px; }
+.layout { display: flex; height: 100vh; }
+.panel { width: 340px; padding: 12px; overflow-y: auto; border-right: 1px solid #ccc; box-sizing: border-box; }
+#map { flex: 1; }
+h1, h2 { margin: 8px 0; }
+h2 { font-size: 15px; }
+label { display: block; margin-top: 6px; }
+input, select, textarea, button { width: 100%; box-sizing: border-box; padding: 6px; margin-top: 2px; font: inherit; }
+button { cursor: pointer; margin-top: 8px; }
+ul { padding-left: 18px; }
+.suggestions li { cursor: pointer; }
+.suggestions li:hover { text-decoration: underline; }
+.muted { color: #666; }
+.error { color: #b00; }
+.home { padding: 24px; }
+.login { max-width: 320px; margin: 10vh auto; }
+@media (max-width: 700px) {
+  .layout { flex-direction: column; height: auto; }
+  .panel { width: 100%; border-right: none; }
+  #map { height: 60vh; }
+}
