@@ -17,7 +17,16 @@ Pasta: `Projeto_Kairos/04_Documentacao_Tecnica/`
 Pasta: `Projeto_Kairos/04_Documentacao_Tecnica/`
 
 - `Diagrama_de_Arquitetura.svg` — Diagrama da arquitetura do sistema.
+<p align="center">
+  <img src="../02_Imagens/Logo_Kairos_NoBG.png" alt="Logo Kairos" width="700">
+</p>
+
+<div style="page-break-after: always;"></div>
 - `casos_de_uso_V1.svg` — Diagrama de casos de uso.
+`Diagrama_de_Arquitetura.svg` — Diagrama da arquitetura do sistema.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/MelhorNarrador/Projeto_de_Desenvolvimento_de_Software/main/Projeto_Kairos/02_Imagens/Diagrama_de_Arquitetura.svg" alt="Diagrama de Arquitetura" width="700">
+</p>
 - `uml_dominio_V1.svg` — Diagrama UML do domínio.
 - `Gantt_09_10.svg` — Planeamento do projeto através de um gráfico de Gantt.
 
