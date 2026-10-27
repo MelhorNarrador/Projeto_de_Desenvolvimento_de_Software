@@ -113,3 +113,20 @@ CREATE TABLE audit_log (
     details     JSONB,
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
+
+-- -------------------------------------------------------------
+-- Real time: every change to incidents/units notifies its district
+-- -------------------------------------------------------------
+CREATE FUNCTION notify_district_change() RETURNS trigger AS $$
+BEGIN
+    PERFORM pg_notify('district_changed', NEW.district_id::text);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER incident_changed AFTER INSERT OR UPDATE ON incident
+    FOR EACH ROW EXECUTE FUNCTION notify_district_change();
+
+CREATE TRIGGER unit_changed AFTER INSERT OR UPDATE ON unit
+    FOR EACH ROW EXECUTE FUNCTION notify_district_change();
+

@@ -1,6 +1,6 @@
 const SEVERITY_COLOR = { 1: "#d32f2f", 2: "#f57c00", 3: "#fbc02d", 4: "#388e3c", 5: "#1976d2" };
 const UNIT_COLOR = { available: "#388e3c", assigned: "#f57c00", en_route: "#f57c00", on_scene: "#d32f2f", unavailable: "#9e9e9e" };
-const POLL_MS = 3000;
+const POLL_MS = 30000; // safety net only: changes arrive over the WebSocket
 
 function session() {
   try {
@@ -33,6 +33,24 @@ async function api(path, options = {}) {
   if (!response.ok) throw new Error(typeof data?.detail === "string" ? data.detail : response.statusText);
   return data;
 }
+//------------------NOT AI WRITEN ------------------
+function connectLive(districtId, onChange) {
+  let timer = null;
+  const changed = () => {
+    clearTimeout(timer);
+    timer = setTimeout(onChange, 200);
+  };
+  const open = () => {
+    const proto = location.protocol === "https:" ? "wss" : "ws";
+    const ws = new WebSocket(`${proto}://${location.host}/api/ws?district_id=${districtId}`);
+    ws.onopen = changed;
+    ws.onmessage = changed;
+    ws.onclose = () => setTimeout(open, 2000);
+  };
+  open();
+  setInterval(onChange, POLL_MS);
+}
+//---------------------------------------------------
 
 function createMap() {
   const map = L.map("map").setView([39.5, -8.0], 7);

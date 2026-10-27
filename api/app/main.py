@@ -4,21 +4,24 @@ from contextlib import asynccontextmanager
 from typing import Literal
 
 import bcrypt
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect
 from psycopg.types.json import Jsonb
 from pydantic import BaseModel, Field
 
 from app.ai import astar
 from app.db import pool
 from app import dispatch
+from app import realtime
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await pool.open()
     checker = asyncio.create_task(dispatch.pending_check())
+    listener = asyncio.create_task(realtime.listen())
     yield
     checker.cancel()
+    listener.cancel()
     await pool.close()
 
 
@@ -30,6 +33,18 @@ async def health():
     async with pool.connection() as conn:
         await conn.execute("SELECT 1")
     return {"status": "ok"}
+
+@app.websocket("/ws")
+async def live(websocket: WebSocket, district_id: int):
+    await websocket.accept()
+    realtime.clients.setdefault(district_id, set()).add(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        pass
+    finally:
+        realtime.clients[district_id].discard(websocket)
 
 @app.get("/districts")
 async def list_districts():

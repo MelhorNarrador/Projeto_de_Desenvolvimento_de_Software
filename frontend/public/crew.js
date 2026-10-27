@@ -129,4 +129,4 @@ async function loadRoute(incident) {
 }
 
 refresh();
-setInterval(refresh, POLL_MS);
+connectLive(user.district_id, refresh);

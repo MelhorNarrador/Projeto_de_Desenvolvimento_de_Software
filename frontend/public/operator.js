@@ -105,4 +105,4 @@ async function refresh() {
 }
 
 refresh();
-setInterval(refresh, POLL_MS);
+connectLive(user.district_id, refresh);
