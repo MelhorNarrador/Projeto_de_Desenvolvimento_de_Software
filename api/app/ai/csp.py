@@ -45,12 +45,15 @@ def assign(incidents, units, eta):
     def free_options(incident_id, used):
         return sum(1 for _, unit_id in domains[incident_id] if unit_id not in used)
 
+    def optimistic_rest(remaining, used):
+        return sum(min(c for c, unit_id in domains[i] if unit_id not in used) for i in remaining)
+
     def search(chosen, used, cost):
-        if cost >= best["cost"]:
+        remaining =[i for i in domains if i not in chosen]
+        if cost + optimistic_rest(remaining, used) >= best["cost"]:
             return
         if best["solution"] is not None and time.monotonic() > deadline:
             return
-        remaining = [i for i in domains if i not in chosen]
         if not remaining:
             best["cost"], best["solution"] = cost, dict(chosen)
             return
