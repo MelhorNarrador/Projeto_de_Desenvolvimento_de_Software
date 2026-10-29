@@ -1,5 +1,5 @@
 1. Como recebem a missão e que informações lhes são passadas exatamente?  
-2. Existe alguma informação vos costuma faltar quando saem?  
+2. Existe alguma informação que vos costuma faltar quando saem?  
 3. Já tiveram de ligar para a central a confirmar dados?  
 4. Como escolhem o caminho? Usam GPS? Sistema próprio? Confiam nele?  
 5. Já foram para a morada errada ou demoraram a encontrar o local? O que aconteceu?  
@@ -21,4 +21,4 @@ Saiu do quartel → Chegou ao local → Terminou | Encontra os botões? A ordem 
 
 1. Que informação aqui não lhe serve, e qual falta?  
 2. Sente que este sistema a auxiliaria ou seria uma "coisa" a mais?  
-3. Que funcionalidades gostava que fossem adicionadas ao protótipo?  
+3. Que funcionalidades gostava que fossem adicionadas ao produto final?  
