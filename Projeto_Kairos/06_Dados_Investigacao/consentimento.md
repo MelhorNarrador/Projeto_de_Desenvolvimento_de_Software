@@ -1,5 +1,5 @@
-Consentimento informado - Projeto Kairos
-Universidade Europeia · Licenciatura em Engenharia Informática · Projeto de Desenvolvimento de Software · 2026/2027 · Grupo 08
+Consentimento informado - Projeto Kairos  
+Universidade Europeia · Licenciatura em Engenharia Informática · Projeto de Desenvolvimento de Software · 2026/2027 · Grupo 08  
 
 Objetivo: perceber como as equipas de emergência recebem e executam missões, e testar um protótipo de aplicação de despacho.  
 O que envolve: uma entrevista de ~40 min e um teste do protótipo num portátil/telemóvel.  
