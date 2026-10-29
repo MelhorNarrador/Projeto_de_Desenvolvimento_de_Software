@@ -1,0 +1,24 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: kairos-db
+spec:
+  instances: 3
+  postgresql:
+    synchronous:
+      method: any
+      number: 1
+  storage:
+    size: 1Gi
+  bootstrap:
+    initdb:
+      database: kairos_db
+      owner: kairos
+      postInitApplicationSQLRefs:
+        configMapRefs:
+          - name: kairos-db-init
+            key: schema.sql
+          - name: kairos-db-init
+            key: seed.sql
+          - name: kairos-db-init
+            key: grants.sql
