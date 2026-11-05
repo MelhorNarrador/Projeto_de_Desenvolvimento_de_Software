@@ -4,6 +4,8 @@ metadata:
   name: kairos-db
 spec:
   instances: 3
+  affinity:
+    podAntiAffinityType: required
   postgresql:
     synchronous:
       method: any
