@@ -13,7 +13,12 @@ metadata:
   name: kairos
   annotations:
     traefik.ingress.kubernetes.io/router.middlewares: default-strip-api@kubernetescrd
+    cert-manager.io/cluster-issuer: letsencrypt
 spec:
+  tls:
+    - hosts:
+        - 34-175-243-154.sslip.io
+      secretName: kairos-tls
   rules:
     - http:
         paths:
