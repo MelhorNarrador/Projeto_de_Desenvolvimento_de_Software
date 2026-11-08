@@ -10,6 +10,7 @@ spec:
     synchronous:
       method: any
       number: 1
+      dataDurability: preferred
   storage:
     size: 1Gi
   bootstrap:
