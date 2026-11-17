@@ -140,10 +140,48 @@ O sistema exige Autenticação por perfil (RF01), Registo com nível de gravidad
 
 
 
-*(Inserir Diagrama de Arquitetura - Ingress, React, FastAPI, PostgreSQL)*
+```mermaid
+graph TD
+    subgraph Utilizadores
+        O[Operador Web]
+        U[Unidade Mobile]
+    end
 
+    subgraph "Cluster Kubernetes (k3s)"
+        I[Ingress Traefik]
+        
+        subgraph "Frontend"
+            F1[React Pod 1]
+            F2[React Pod 2]
+        end
+        
+        subgraph "Backend API (FastAPI + IA)"
+            A1[API Pod 1]
+            A2[API Pod 2]
+            A3[API Pod 3]
+        end
+        
+        subgraph "Base de Dados (CloudNativePG)"
+            DB1[(PostgreSQL Primária)]
+            DB2[(PostgreSQL Réplica)]
+        end
+    end
 
-
+    O -->|HTTPS| I
+    U -->|HTTPS| I
+    
+    I --> F1
+    I --> F2
+    I --> A1
+    I --> A2
+    I --> A3
+    
+    A1 -->|Leitura/Escrita| DB1
+    A2 -->|Leitura/Escrita| DB1
+    A3 -->|Leitura/Escrita| DB1
+    
+    DB1 -.->|Replicação Síncrona| DB2
+```
 O sistema corre num cluster Kubernetes (k3s) com três máquinas virtuais distintas. O tráfego entra pelo Traefik Ingress (2 réplicas) e é servido por 3 réplicas *stateless* da API FastAPI. Os dados assentam numa base de dados PostgreSQL gerida pelo CloudNativePG com 3 instâncias (replicação síncrona), garantindo que a falha de uma máquina não elimina as réplicas aplicacionais.
 
 
