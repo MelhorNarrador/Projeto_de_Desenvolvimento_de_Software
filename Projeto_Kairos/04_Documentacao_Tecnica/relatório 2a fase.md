@@ -1,7 +1,7 @@
 # Kairos - Sistema Distribuído de Despacho de Emergências
 
 **Universidade Europeia / IADE - Engenharia Informática**  
-**Projeto Multidisciplinar - 5º semestre (2026/2027)**  
+**Projeto Multidisciplinar - 5º semestre (2026/2027)** 
 **Grupo 08**  
 **Elementos do Grupo**: Pedro António - 20241273, Mateus Reis - 20241799, Francisco Abecasis - 20240120, Deolindo Soares - 20221446
 
