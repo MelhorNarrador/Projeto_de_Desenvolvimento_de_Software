@@ -1,343 +1,441 @@
-# KAIRÓS - Sistema Distribuído de Despacho de Emergências
+# Kairos - Sistema Distribuído de Despacho de Emergências
 
+**Universidade Europeia / IADE - Engenharia Informática**  
+**Projeto Multidisciplinar - 5º semestre (2026/2027)**  
+**Grupo 08**  
+**Elementos do Grupo**: Pedro António - 20241273, Mateus Reis - 20241799, Francisco Abecasis - 20240120, Deolindo Soares - 20221446
 
-
-**Universidade Europeia / IADE - Engenharia Informática**
-
-Projeto Multidisciplinar - 5º semestre (2026/2027)
-
-**Grupo 08**
-
-
-
-**Elementos do Grupo:**
-
-* Deolindo Soares
-
-* Mateus Reis
-
-* Pedro Afonso
-
-* Francisco Abecasis (20240120)
-
-
-
-**GitHub:** [Repositório GitHub](#) | **Trello:** [Quadro Trello](#)
-
-
-
-*Palavras-chave: sistemas distribuídos, tolerância a faltas, despacho de emergências, Kubernetes, replicação, problemas de satisfação de restrições, A\*, tempo real*
-
-
+**GitHub**: [Repositório GitHub](https://github.com/MelhorNarrador/Projeto_de_Desenvolvimento_de_Software)  
+**Trello**: [Trello](https://trello.com/invite/b/6ac8f867a984782bfd86969a/ATTI8f82f4240e1f515c5cfdc93e4f7387da96C105E2/projeto-kairos)  
 
 ---
 
+<p align="center">
+  <img src="../02_Imagens/Logo_Kairos_NoBG.png" alt="Logo Kairos" width="700">
+</p>
 
+<div style="page-break-after: always;"></div>
+
+---
+
+## Palavras-chave
+sistemas distribuídos, tolerância a faltas, despacho de emergências, Kubernetes, replicação, problemas de satisfação de restrições, A*, tempo real
+
+---
 
 ## 1. Introdução
 
+Este relatório apresenta a segunda versão do projeto **Kairos**, desenvolvido no âmbito do projeto multidisciplinar de 5.º semestre da Licenciatura em Engenharia Informática.
 
+A **Kairos** é uma plataforma web de despacho de emergências que recebe ocorrências (emergências médicas, incêndios, acidentes), acompanha em tempo real a posição e o estado das unidades de socorro e **atribui automaticamente a unidade mais adequada a cada ocorrência**, calculando a rota mais rápida até ao local.
 
-Este relatório apresenta o projeto Kairos, desenvolvido no âmbito do projeto multidisciplinar de 5.º semestre da Licenciatura em Engenharia Informática. A Kairos é uma plataforma web de despacho de emergências que recebe ocorrências (emergências médicas, incêndios, acidentes), acompanha em tempo real a posição e o estado das unidades de socorro e atribui automaticamente a unidade mais adequada a cada ocorrência, calculando a rota mais rápida até ao local.
+Por se tratar de um sistema crítico, a plataforma é construída sobre uma **arquitetura distribuída e tolerante a faltas**: todos os componentes estão replicados, e a falha de um servidor, de uma réplica da base de dados ou de uma máquina inteira não interrompe o serviço nem provoca a perda de ocorrências.
 
+Esta **segunda entrega (Protótipo)** centra-se na implementação prática e desenvolvimento técnico do sistema: construção das interfaces web para o operador e tripulação, automação (CI/CD), orquestração na cloud (Azure e k3s), replicação de dados e validação dos mecanismos de tolerância a faltas.
 
-
-Por se tratar de um sistema crítico, a plataforma é construída sobre uma arquitetura distribuída e tolerante a faltas: todos os componentes estão replicados, e a falha de um servidor, de uma réplica da base de dados ou de uma máquina inteira não interrompe o serviço nem provoca a perda de ocorrências. Este documento funde a conceção inicial do sistema (requisitos, arquitetura, modelo de faltas) com o protótipo detalhado de Inteligência Artificial implementado na segunda fase do projeto.
-
-
+---
 
 ## 2. Metodologia
 
+O projeto segue uma **metodologia ágil baseada em Kanban**. O trabalho flui de forma contínua por um quadro de tarefas, em vez de ser organizado em ciclos fechados, o que se adapta melhor a uma equipa com disponibilidades variáveis ao longo do semestre. Para garantir o cumprimento das três entregas, o quadro é complementado por **milestones** com datas fixas.
 
+O quadro é gerido no **Trello** o que garante a rastreabilidade de todo o trabalho realizado.
 
-O projeto segue uma metodologia ágil baseada em Kanban. O trabalho flui de forma contínua por um quadro de tarefas gerido no Trello. As regras de trabalho incluem um Limite de trabalho em curso (WIP) de 2 tarefas em "Doing" por elemento, registo integral em cartões e pontos de situação semanais. O desenvolvimento está dividido em três grandes marcos (Milestones): Conceção (E1), Protótipo IA e Cluster (E2), e Versão Final com segurança e testes de métricas (E3).
+### 2.1 Quadro Kanban
 
+| Coluna | Significado |
+|---|---|
+| **Backlog** | Tarefas identificadas, ainda não priorizadas |
+| **To Do** | Tarefas priorizadas para o marco atual, prontas a ser iniciadas |
+| **Doing** | Tarefas em desenvolvimento, com um responsável atribuído |
+| **Blocked** | Tarefa bloqueada, espera por ajuda de outro elemento ou finalização de outra tarefa |
+| **In Review** | Tarefa concluída, espera por testes e revisão por outro elemento |
+| **Done** | Tarefa revista e integrada no ramo principal |
 
+### 2.2 Regras de Trabalho
+
+| Regra | Descrição |
+|---|---|
+| **Limite de trabalho em curso (WIP)** | Cada elemento tem no máximo 2 tarefas em "Doing" em simultâneo |
+| **Uma tarefa, um cartão** | Todo o trabalho é registado como cartões no Trello, com responsável e etiquetas |
+| **Definição de Done** | Uma tarefa só passa a "Done" quando o código ou documento está revisto, integrado e testado |
+| **Ponto de situação semanal** | Reunião curta com o quadro como base: o que avançou, o que está bloqueado e o que se segue |
+
+### 2.3 Etiquetas
+
+| Tipo | Etiquetas |
+|---|---|
+| **Natureza da tarefa** | `feature`, `bug`, `docs`, `teste` |
+| **Prioridade** | `alta`, `média`, `baixa` |
+
+### 2.4 Marcos (Milestones)
+
+| Marco | Data | Objetivo |
+|---|---|---|
+| **Entrega 1 – Conceção** | 11/10/2026 | Problema, requisitos, arquitetura, modelo de faltas, relatório v1 |
+| **Entrega 2 – Protótipo** | 15/11/2026 | Cluster Kubernetes, backend replicado, CSP e A* funcionais, primeiros testes de falha, relatório v2 |
+| **Entrega 3 – Versão final** | 20/12/2026 | Frontend completo, segurança, testes de falha automatizados, demonstração, relatório final |
+
+Cada marco agrupa os cartões que têm de estar concluídos até à respetiva data, permitindo acompanhar no Trello a percentagem de trabalho concluído em cada entrega.
+
+Este relatório corresponde ao marco **Entrega 2 – Protótipo**.  
+
+---
 
 ## 3. Descrição e Problema
 
+Numa emergência, o tempo até à chegada do socorro é determinante. Em situações como uma paragem cardiorrespiratória, cada minuto de atraso reduz de forma significativa as hipóteses de sobrevivência, e parte desse tempo é gasto **antes de a unidade sair** a decidir que meio enviar e por onde.
 
+Em muitos cenários esta decisão depende do operador, que escolhe a unidade com base na experiência e numa lista de meios disponíveis. Esta abordagem apresenta três problemas:
 
-Numa emergência, o tempo até à chegada do socorro é determinante. Em muitas centrais, a decisão de despacho depende do operador, apresentando três problemas principais:
+| Problema | Consequência |
+|---|---|
+| O operador não sabe com exatidão **quanto tempo** cada unidade demora a chegar | A unidade mais próxima em linha reta pode não ser a mais rápida pelas ruas |
+| As ocorrências são tratadas por **ordem de chegada** | Uma ocorrência leve pode ficar com a unidade de que uma ocorrência crítica vai precisar logo a seguir |
+| Não existe **visão do conjunto** | Uma zona pode ficar sem unidades disponíveis sem que ninguém se aperceba |
 
-1. O operador não sabe com exatidão o tempo real da rota pelas ruas;
+A estes problemas soma-se um requisito técnico: uma central de emergência **não pode parar**. Se o servidor que a suporta falhar, as ocorrências deixam de ser registadas e atribuídas. Um sistema centralizado num único servidor representa um ponto único de falha inaceitável neste contexto.
 
-2. As ocorrências são tratadas por ordem de chegada, prejudicando casos críticos;
+A **Kairos** pretende resolver ambos os problemas: **decidir melhor**, através de Inteligência Artificial, e **nunca parar**, através de uma arquitetura distribuída e tolerante a faltas.
 
-3. Falta visão de conjunto do distrito.
-
-
-
-A Kairos resolve estes problemas automatizando a decisão por IA e garantindo que o sistema central nunca falha perante a queda de um servidor.
-
-
+---
 
 ## 4. Objetivos & Motivação
 
+### 4.1 Objetivos
 
+- Desenvolver uma plataforma web responsiva de despacho de emergências.
+- Registar ocorrências e acompanhar unidades de socorro num mapa em tempo real.
+- Atribuir automaticamente unidades a ocorrências através de **CSP**, com reatribuição quando surge uma ocorrência mais grave.
+- Calcular rotas pela rede de estradas real através do algoritmo **A***.
+- Garantir que **nenhuma ocorrência confirmada é perdida**, mesmo perante a falha de componentes.
+- Manter o serviço disponível perante a falha de qualquer componente individual ou de uma máquina inteira.
+- Demonstrar experimentalmente a tolerância a faltas através de testes de falha.
 
-Os principais objetivos passam por desenvolver uma plataforma web responsiva, atribuir automaticamente unidades através de CSP, reatribuir dinamicamente perante ocorrências mais graves, calcular rotas reais através do algoritmo A\*, e manter o serviço 100% disponível perante falhas. Sistemas de despacho são o exemplo perfeito de sistemas onde a distribuição e a replicação de dados salvam ativamente vidas.
+### 4.2 Motivação
 
+Os sistemas de despacho são um exemplo claro de sistema onde a **distribuição é necessária**, a disponibilidade e a integridade dos dados têm impacto direto na vida das pessoas. Este contexto permite trabalhar, de forma justificada, todos os conceitos centrais de sistemas distribuídos (replicação, consistência, deteção de falhas e recuperação), ao mesmo tempo que oferece problemas reais para as restantes UCs.
 
+---
 
 ## 5. Atores
 
+| Ator | Descrição | Necessidade principal |
+|---|---|---|
+| **Operador da central** | Recebe chamadas e regista ocorrências, supervisiona o estado de todas as unidades | Ver rapidamente que unidade enviar e confirmar a atribuição |
+| **Unidade de socorro** | Tripulação de ambulância, bombeiros ou polícia | Receber a missão, a rota e atualizar o seu estado (a caminho, no local, disponível) |
+| **Administrador** | Gere utilizadores, unidades e bases | Configurar o sistema e consultar o registo de auditoria|
 
-
-| Ator | Descrição | Necessidade principal | 
-
-| ----- | ----- | ----- | 
-
-| **Operador da central** | Recebe chamadas e regista ocorrências. | Ver rapidamente que unidade enviar e confirmar a atribuição. | 
-
-| **Unidade de socorro** | Tripulação de ambulância, bombeiros, etc. | Receber a missão, a rota e atualizar o estado. | 
-
-| **Administrador** | Gere utilizadores, unidades e bases. | Configurar o sistema e consultar auditoria. | 
-
-
+---
 
 ## 6. Pesquisa de mercado
 
+Os sistemas de despacho assistido por computador (**CAD – Computer-Aided Dispatch**) são utilizados por serviços de emergência em todo o mundo. Em Portugal, as chamadas de emergência médica são encaminhadas para os **CODU** (Centros de Orientação de Doentes Urgentes) do INEM.
 
+| Solução | Pontos fortes | Limitações | Oportunidade para a Kairos |
+|---|---|---|---|
+| **Sistemas CAD comerciais** | Completos, integrados com comunicações rádio e telefone | Soluções proprietárias, de custo elevado e pouco transparentes | Demonstrar os mecanismos de decisão e de tolerância a faltas de forma aberta |
+| **Despacho manual com mapa** | Simples, controlado pelo operador | Decisão dependente da experiência. Sem estimativa de tempos reais | Proposta automática baseada em tempos de chegada calculados |
+| **Atribuição pela unidade mais próxima** | Rápida e fácil de implementar | Decisão isolada por ocorrência, ignora prioridades e cobertura | Decisão conjunta de várias ocorrências, com reatribuição por prioridade |
 
-Os sistemas CAD comerciais são completos mas proprietários e dispendiosos. O despacho manual baseia-se na experiência sem tempos de rota reais. A Kairos diferencia-se por oferecer uma atribuição otimizada com restrições explícitas, reatribuição dinâmica por prioridade, cálculo de chegada real pela rede de estradas (A\*) e tolerância a faltas transparente e demonstrável.
+A **Kairos** diferencia-se por combinar, num só sistema:
 
+1. **Atribuição otimizada** de várias ocorrências em simultâneo, com restrições explícitas (CSP).
+2. **Reatribuição dinâmica** de unidades em trânsito quando surge uma ocorrência mais grave.
+3. **Tempos de chegada reais**, calculados pela rede de estradas (A*).
+4. **Tolerância a faltas demonstrável**, com garantias explícitas sobre disponibilidade e perda de dados.
 
+---
 
 ## 7. Requisitos
 
+### 7.1 Requisitos Funcionais
+
+| ID | Requisito |
+|---|---|
+| RF01 | Autenticação de utilizadores com perfis de operador, unidade e administrador |
+| RF02 | Registo de ocorrências com tipo, localização, nome da vítima, descrição breve, número de vítimas e **nível de gravidade** (ver 7.5) |
+| RF03 | Visualização das ocorrências e unidades do distrito num mapa em tempo real |
+| RF04 | Proposta automática de atribuição de unidades (CSP), com confirmação ou rejeição pelo operador |
+| RF05 | Reatribuição de unidades em trânsito quando surge uma ocorrência de gravidade superior |
+| RF06 | Pedido de apoio a distritos vizinhos quando o distrito não tem unidades adequadas |
+| RF07 | Cálculo e apresentação da rota mais rápida até à ocorrência (A*) |
+| RF08 | Vista da unidade: receber missão, ver rota e atualizar estado |
+| RF09 | Atualização periódica da posição das unidades |
+| RF10 | Gestão de unidades e utilizadores (administrador) |
+| RF11 | Registo de auditoria de todas as atribuições e informações relevantes |
 
 
-### 7.1 Requisitos Funcionais e Não Funcionais
+### 7.2 Requisitos Não Funcionais
 
+| ID | Categoria | Requisito |
+|---|---|---|
+| RNF01 | Desempenho | A proposta de atribuição é apresentada em menos de 2 segundos após o registo da ocorrência |
+| RNF02 | Tempo real | Alterações de estado chegam aos utilizadores interessados em menos de 1 segundo |
+| RNF03 | Recuperação | Após a falha de um componente, a redundância é reposta automaticamente |
+| RNF04 | Rastreabilidade | Todas as decisões de atribuição ficam registadas com autor e data |
+| RNF05 | Usabilidade | Interface responsiva, utilizável em computador e no telemóvel da unidade |
+| RNF06 | Disponibilidade | O serviço mantém-se disponível perante a falha de qualquer componente individual ou de uma máquina do cluster |
+| RNF07 | Integridade | Nenhuma ocorrência confirmada é perdida |
+| RNF08 | Segurança | Toda a comunicação externa é cifrada e o acesso é controlado por perfil |
+| RNF09 | Privacidade | Os dados pessoais das vítimas são cifrados na base de dados e só são visíveis a quem trata a ocorrência |
 
+### 7.3 Casos de Uso
 
-O sistema exige Autenticação por perfil (RF01), Registo com nível de gravidade (RF02), Proposta de atribuição via CSP (RF04), Reatribuição de unidades em trânsito (RF05) e Cálculo de rota A\* (RF07). Nos Requisitos Não Funcionais destacam-se: Desempenho inferior a 2 segundos para atribuição (RNF01), Tempo real (RNF02), e Integridade onde nenhuma ocorrência confirmada é perdida (RNF07).
+<img src="casos_de_uso_V1.svg" alt="Diagrama de casos de uso v1" width="700">
 
+### 7.4 Modelo de Domínio
 
+<img src="uml_dominio_V1.svg" alt="Diagrama de domínio UML v1" width="700">
 
-### 7.2 Escala de Gravidade (Triagem de Manchester)
+### 7.5 Escala de Gravidade
 
+A gravidade de cada ocorrência é atribuída pelo operador numa escala de cinco níveis, inspirada na **Triagem de Manchester** utilizada nos serviços de urgência hospitalar em Portugal. O tipo de ocorrência sugere um nível inicial, que o operador pode alterar.
 
+| Nível | Cor | Exemplos | Tempo-alvo de chegada | Peso no CSP |
+|---|---|---|---|---|
+| **1 – Emergente** | Vermelho | Paragem cardiorrespiratória, vítima inconsciente | 8 min | 16 |
+| **2 – Muito urgente** | Laranja | Dor torácica, suspeita de AVC, hemorragia grave | 15 min | 8 |
+| **3 – Urgente** | Amarelo | Fratura exposta, queimadura moderada | 30 min | 4 |
+| **4 – Pouco urgente** | Verde | Fratura fechada, entorse, ferida ligeira | 60 min | 2 |
+| **5 – Não urgente** | Azul | Transporte não urgente, queixa ligeira | 120 min | 1 |
 
-| Nível | Cor | Exemplos | Tempo-alvo | Peso (CSP) | 
+Os tempos-alvo e os pesos são **definidos pelo grupo para este projeto**. Os tempos da Triagem de Manchester referem-se à observação médica no hospital e não à chegada de meios ao local.
 
-| ----- | ----- | ----- | ----- | ----- | 
-
-| **1 - Emergente** | Vermelho | Paragem cardiorrespiratória, inconsciente | 8 min | 16 | 
-
-| **2 - Muito urgente** | Laranja | Dor torácica, suspeita de AVC | 15 min | 8 | 
-
-| **3 - Urgente** | Amarelo | Fratura exposta, queimadura moderada | 30 min | 4 | 
-
-| **4 - Pouco urgente** | Verde | Fratura fechada, entorse | 60 min | 2 | 
-
-| **5 - Não urgente** | Azul | Transporte não urgente | 120 min | 1 | 
-
-
+---
 
 ## 8. Arquitetura Distribuída
 
+### 8.1 Visão Geral
 
+<img src="Diagrama_de_Arquitetura.svg" alt="Diagrama de Arquitetura" width="700">  
 
-```mermaid
-graph TD
-    subgraph Utilizadores
-        O[Operador Web]
-        U[Unidade Mobile]
-    end
+O sistema corre num cluster **Kubernetes** com **três nós**, cada um numa máquina virtual distinta. Todos os nós executam serviços aplicacionais, e os componentes replicados são distribuídos por nós diferentes, de forma a que a perda de uma máquina não elimine todas as réplicas de um componente. 
+Os três nós são servidores k3s com etcd embutido, pelo que a perda de um nó não compromete a gestão do cluster.
 
-    subgraph "Cluster Kubernetes (k3s)"
-        I[Ingress Traefik]
-        
-        subgraph "Frontend"
-            F1[React Pod 1]
-            F2[React Pod 2]
-        end
-        
-        subgraph "Backend API (FastAPI + IA)"
-            A1[API Pod 1]
-            A2[API Pod 2]
-            A3[API Pod 3]
-        end
-        
-        subgraph "Base de Dados (CloudNativePG)"
-            DB1[(PostgreSQL Primária)]
-            DB2[(PostgreSQL Réplica)]
-        end
-    end
+### 8.2 Componentes
 
-    O -->|HTTPS| I
-    U -->|HTTPS| I
-    
-    I --> F1
-    I --> F2
-    I --> A1
-    I --> A2
-    I --> A3
-    
-    A1 -->|Leitura/Escrita| DB1
-    A2 -->|Leitura/Escrita| DB1
-    A3 -->|Leitura/Escrita| DB1
-    
-    DB1 -.->|Replicação Síncrona| DB2
-```
-O sistema corre num cluster Kubernetes (k3s) com três máquinas virtuais distintas. O tráfego entra pelo Traefik Ingress (2 réplicas) e é servido por 3 réplicas *stateless* da API FastAPI. Os dados assentam numa base de dados PostgreSQL gerida pelo CloudNativePG com 3 instâncias (replicação síncrona), garantindo que a falha de uma máquina não elimina as réplicas aplicacionais.
+| Camada | Componente | Função | Mecanismo de redundância |
+|---|---|---|---|
+| Entrada | **Ingress (Traefik)** | Ponto de entrada HTTPS, encaminha pedidos para o frontend e a API | 2 réplicas em nós diferentes. O serviço é exposto em todos os nós, pelo que qualquer nó aceita pedidos |
+| Cliente | **Frontend** (React + Leaflet) | Interface web responsiva | `Deployment` com 2 réplicas |
+| Serviços | **API** (FastAPI) | Autenticação, ocorrências, rotas (A*), WebSockets | `Deployment` stateless com 3 réplicas, o `Service` distribui os pedidos |
+| Dados | **PostgreSQL** | Ocorrências, unidades, atribuições, utilizadores, auditoria| **CloudNativePG** com 3 instâncias (1 primária + 2 réplicas, uma por nó): replicação em streaming, réplica síncrona e failover automático |
+| Testes | **Simulador** | Gera ocorrências e movimento de unidades| --- |
 
+### 8.3 Fluxo Principal
 
+| # | Passo |
+|---|---|
+| 1 | O operador preenche o formulário da ocorrência e o pedido chega a qualquer réplica da API|
+| 2 | A API grava a ocorrência com o estado pendente |
+| 3 | A API corre o CSP sobre as ocorrências pendentes do distrito e os meios disponíveis |
+| 4 | A API grava a atribuição e responde ao operador com o meio atribuído |
+| 5 | A unidade atribuída e os operadores do distrito recebem a atualização por WebSocket |
 
-## 9. Modelo de Faltas e Cenários
+A BD funciona simultaneamente como armazenamento e como fila de trabalho: uma ocorrência só sai do estado *pendente* quando a sua atribuição é gravada. Assim, uma falha a meio do processamento não perde a ocorrência, que continua pendente e é retomada.
 
+### 8.4 Decisões Arquiteturais
 
+| Decisão | Justificação |
+|---|---|
+| **Kubernetes** | Recria automaticamente componentes que falham, distribui réplicas por várias máquinas e oferece deteção de falhas |
+| **API stateless** com autenticação **JWT** | Qualquer instância atende qualquer pedido, a falha de uma instância não termina sessões |
+| **Base de dados replicada** | Todas as garantias necessárias são asseguradas pela BD |
+| **Réplica síncrona** no PostgreSQL | Uma transação só é confirmada depois de existir também na réplica, pelo que o failover não perde dados confirmados |
+| **Consistência forte** nas atribuições | O CSP decide a atribuição segundo os critérios de desempate (11.1), mas é a BD que garante que um meio não é atribuído duas vezes. Se duas réplicas da API tentarem atribuir o mesmo meio ao mesmo tempo, só uma escrita tem sucesso, a outra réplica volta a correr o CSP com o estado atualizado |
 
-O sistema suporta a falha por paragem (*crash*) de qualquer componente isolado ou de uma máquina inteira do cluster. A consistência forte é assegurada pela réplica síncrona do PostgreSQL. Nos cenários de falha, se um Pod da API falhar a meio de um registo, o Kubernetes recria o Pod e a ocorrência, guardada na BD como pendente, será atribuída na execução seguinte do CSP, atrasando no máximo 30 segundos sem perda de dados.
+---
 
+## 9. Modelo de Faltas
 
+| Questão | Resposta |
+|---|---|
+| **Componentes que podem falhar** | Pods da API, do frontend e do ingress. Primária ou réplica do PostgreSQL. Uma máquina inteira do cluster. Ligação de rede entre componentes ou de um cliente |
+| **Tipos de falha considerados** | Falha por paragem (*crash*): o componente deixa de responder. Interrupção temporária de comunicação. |
+| **Falhas simultâneas suportadas** | A falha de **uma máquina do cluster** (e de todos os pods que nela correm) |
+| **Funcionalidades disponíveis após a falha** | Todas: registo de ocorrências, atribuição, rotas, mapa em tempo real e vista das unidades |
+| **Deteção da falha** | *Probes* do Kubernetes nos pods. Estado *NotReady* dos nós. Monitorização da primária pelo CloudNativePG |
+| **Recuperação ou substituição** | O Kubernetes recria os pods em falha, noutro nó se necessário, o tráfego deixa de ser enviado para pods em falha, o CloudNativePG promove a réplica a primária |
+| **Informação que pode ser perdida** | Nenhuma ocorrência ou atribuição **confirmada**. Um pedido em curso no momento da falha pode falhar e o operador repete-o. Avisos em tempo real emitidos durante a falha podem perder-se, mas o cliente recupera o estado atual ao religar. A última posição de um meio pode perder-se, sendo substituída pela seguinte |
+| **Consistência entre réplicas** | Réplica síncrona do PostgreSQL |
 
-## 10. Componente de Inteligência Artificial (Implementação)
+---
 
+## 10. Cenários de Demonstração de Falhas
 
+| # | O que falha | Deteção | O que mantém o serviço | Impacto | Perda de dados | Recuperação e reposição |
+|---|---|---|---|---|---|---|
+| F1 | Pod da API | *Probe* do Kubernetes | As outras 2 réplicas recebem os pedidos | Os WebSockets dessa réplica religam automaticamente a outra | Nenhuma | Pod recriado, volta a 3 réplicas |
+| F2 | Pod da API a meio de um registo | *Probe* do Kubernetes | A ocorrência fica pendente e é atribuída na próxima execução do CSP | Atribuição atrasa até 30 s | Nenhuma | Pod recriado |
+| F3 | PostgreSQL primária | CloudNativePG | Réplica promovida a primária | Escritas falham durante alguns segundos | Nenhuma confirmada | Antiga primária volta como réplica |
+| F4 | Máquina inteira | Nó passa a *NotReady* | Réplicas nos outros nós continuam a servir | Breve degradação | Nenhuma confirmada | Pods recriados nos outros nós |
+| F5 | Ligação de rede de uma unidade | Erro no envio | A unidade guarda o estado localmente | Posição desatualizada temporariamente | Nenhuma | Reenvia ao recuperar a ligação |
 
-A solução materializa o motor lógico central do processo de despacho de emergências, operando sobre o grafo da rede rodoviária real extraído do OpenStreetMap. A resolução processa-se sequencialmente.
+Além das falhas, é demonstrado o cenário de **concorrência**: duas ocorrências registadas ao mesmo tempo, em réplicas diferentes, que disputam o mesmo meio. Só uma fica com ele e a outra recebe a melhor alternativa.
 
+---
 
+## 11. Componente de Inteligência Artificial
 
-### 10.1 Atribuição de Meios (Constraint Satisfaction Problem)
+A IA resolve dois problemas.
 
+### 11.1 Atribuição de Meios - CSP
 
+Sempre que é registada uma ocorrência, e periodicamente a cada 30 segundos, a API corre o CSP sobre as ocorrências pendentes desse distrito. A execução periódica garante que uma ocorrência que ficou pendente por falha de uma réplica é retomada.
 
-O primeiro passo da IA reduz o espaço de procura computacional recorrendo a um modelo de satisfação de restrições (CSP):
+| Elemento | Descrição |
+|---|---|
+| **Variáveis** | Uma por meio necessário em cada ocorrência pendente |
+| **Domínios** | Meios do tipo certo disponíveis ou a caminho de uma ocorrência menos grave, se não houver nenhum, meios dos distritos vizinhos |
+| **Restrições obrigatórias** | Um meio por ocorrência, tipo de meio adequado, suporte avançado para os níveis 1 e 2, desvio só para uma ocorrência mais grave |
+| **Custo a minimizar** | Soma dos tempos de chegada × peso da gravidade |
+| **Resolução** | Backtracking com MRV e *branch and bound* |
 
-* **Variáveis:** Cada ocorrência pendente atua como uma variável que exige alocação.
+**Desempate quando duas ocorrências querem o mesmo meio:**
 
-* **Domínio:** O conjunto de todas as unidades disponíveis no distrito.
+| Ordem | Critério |
+|---|---|
+| 1 | **Gravidade**: a mais grave fica com o meio |
+| 2 | **Quem perde mais sem ele**: o meio vai para a ocorrência cuja alternativa é pior (resulta do custo total do CSP) |
+| 3 | **Antiguidade**: a ocorrência registada primeiro |
 
-* **Restrições Obrigatórias:** Uma unidade é descartada se não possuir a adequação tipológica (ex: suporte avançado para níveis 1 e 2) ou se não estiver estritamente disponível (exceto se puder ser desviada de uma ocorrência menos grave).
+### 11.2 Cálculo de Rotas - A*
 
+| Elemento | Descrição |
+|---|---|
+| **Grafo** | Rede de estradas dos distritos da demonstração, obtida do OpenStreetMap |
+| **Custo** | Tempo de viagem de cada troço (comprimento ÷ velocidade máxima) |
+| **Heurística** | Distância em linha reta ÷ velocidade máxima da rede |
+| **Utilização** | Tempos de chegada para o CSP e rota apresentada no mapa |
 
+---
 
-### 10.2 Cálculo de Rotas (Algoritmo A\*)
+## 12. Segurança
 
+| Área | Medida |
+|---|---|
+| **Autenticação** | Palavras-passe com *hash* (bcrypt), tokens **JWT** com validade curta |
+| **Autorização** | Acesso por perfil e por distrito: o operador só vê o seu distrito, a unidade só vê a sua missão |
+| **Dados pessoais** | Nome da vítima cifrado na BD, recolhem-se apenas os dados necessários (RGPD) |
+| **Comunicação** | HTTPS e WebSockets cifrados no ingress |
+| **Segredos** | Credenciais em *Secrets* do Kubernetes, nunca no repositório |
+| **Auditoria** | Registo de todas as atribuições e alterações, com utilizador e data |
+| **Proteção da API** | Validação dos dados de entrada |
 
+---
 
-Para as unidades validadas pelo CSP, o motor invoca o algoritmo de pesquisa heurística A\*. O objetivo é o tempo real de chegada pela rede rodoviária e não a distância em linha reta. A heurística desenhada garante admissibilidade:
+## 13. Tecnologias a Utilizar
 
-> **Heurística (h) = Distância Euclidiana em linha reta ÷ Velocidade máxima da rede**
+| Camada | Tecnologias |
+|---|---|
+| **Frontend** | React, Leaflet, OpenStreetMap, WebSockets |
+| **Backend** | Python, FastAPI |
+| **Inteligência Artificial** | Python, OSMnx (obtenção do grafo de estradas) |
+| **Base de Dados** | PostgreSQL, CloudNativePG |
+| **Infraestrutura** | Docker, Kubernetes (K3s), Traefik |
+| **Ferramentas** | GitHub, Trello, VSCode, Postman, Discord |
 
+---
 
+## 14. Guiões de Teste
 
-O algoritmo calcula o menor custo real acumulado somado à estimativa heurística até atingir o nó da ocorrência, devolvendo o tempo total de viagem.
+### Guião 1 - Registar ocorrência (Core)
 
+1. O operador do distrito de Lisboa autentica-se.
+2. Abre o formulário de nova ocorrência e preenche: localização no mapa, nome da vítima, descrição breve e nível 1 (vermelho).
+3. O sistema atribui automaticamente a ambulância de suporte avançado com menor tempo de chegada.
+4. A unidade recebe a missão e a rota de imediato, e a atribuição aparece no mapa do operador.
 
+**Resultado esperado**: O meio é atribuído em menos de 2 segundos.
 
-### 10.3 Execução e Análise de Decisão
+### Guião 2 - Reatribuição por gravidade
 
+1. Uma ambulância está a caminho de uma ocorrência de nível 4 (verde).
+2. É registada uma ocorrência de nível 1 próxima, sem outro meio adequado disponível.
+3. A ambulância é desviada para a ocorrência de nível 1.
 
+**Resultado esperado**: A ocorrência de nível 4 volta a ficar pendente e recebe outro meio quando houver.
 
-O motor minimiza a função de custo global: **Soma dos tempos de chegada × Peso da gravidade**. Em caso de ocorrências simultâneas a disputar o mesmo meio, aplicam-se os critérios de desempate:
+### Guião 3 - Ocorrências simultâneas
 
-1. Gravidade da ocorrência;
+1. Dois operadores registam ao mesmo tempo ocorrências próximas, com apenas uma ambulância disponível por perto.
+2. Os pedidos chegam a réplicas diferentes da API.
 
-2. Qual vítima "perde mais" caso fique sem essa viatura;
+**Resultado esperado**: A ambulância é atribuída a uma só ocorrência, segundo os critérios de desempate, a outra recebe a melhor alternativa.
 
-3. Antiguidade do registo.
+---
 
+## 15. Desenvolvimento do Protótipo (2ª Entrega)
 
+Esta segunda fase do projeto, foi dedicada a desenvolver e materializar a infraestrutura e os algoritmos previstos na conceção, traduzindo-os num protótipo funcional.
 
-### 10.4 Integração na Arquitetura (PBL)
+### 15.1 Funcionalidades da Aplicação e Interfaces
+* **Frontend do Operador:** Foi implementado o mapa interativo onde o operador tem visão abrangente sobre as ocorrências e os meios do distrito.
+* **Registo e Moradas:** O formulário de registo de ocorrências foi otimizado com um sistema de pesquisa de moradas.
+* **Ecrã da Tripulação:** Criou-se a interface dedicada para os meios no terreno, permitindo escolher a viatura operacional, consultar os dados da missão e visualizar o caminho traçado até ao local da emergência.
+* **Sincronização (WebSockets):** O sistema garante agora atualizações automáticas; quando uma nova atribuição é feita na API, tanto o ecrã do operador como o da tripulação são notificados em tempo real.
 
+### 15.2 Infraestrutura e Arquitetura Cloud
+* **Integração Contínua (CI/CD):** O projeto foi preparado para ser instalado automaticamente através de pipelines criados no GitHub Actions, gerando os manifestos para o Kubernetes.
+* **Cluster na Cloud (Azure):** O backend foi configurado para funcionar distribuído por 3 máquinas virtuais na cloud, utilizando a distribuição k3s.
+* **Base de Dados Replicada:** A tolerância a falhas na camada de dados foi configurada via CloudNativePG, garantindo que existem cópias da base de dados nas várias máquinas do cluster.
+* **Segurança e Redes:** Implementou-se o acesso seguro à plataforma (HTTPS) orquestrado por duas portas de entrada geridas pelo Ingress Traefik.
 
+---
 
-O algoritmo de IA (em Python) integra os pods da API desenvolvida em FastAPI de forma *stateless*. O CSP consome as ocorrências a partir do PostgreSQL, que atua simultaneamente como persistência e fila de trabalho. A consistência forte previne colisões: se duas instâncias tentarem atribuir a mesma ambulância, a BD valida apenas a primeira transação. Após a decisão, o FastAPI emite a atualização via WebSockets, refletindo-se na interface em menos de 1 segundo.
+## 16. Planeamento Tarefas - 2ª Entrega
 
+Para garantir os objetivos da Entrega 2, as tarefas técnicas foram organizadas no seguinte formato Kanban:
 
+| Data | # | Tarefa |
+|---|---|---|
+| 26/10/2026 | 1 | Mapa do operador com as ocorrências e os meios do distrito |
+| 26/10/2026 | 2 | Registar uma ocorrência com pesquisa de moradas |
+| 26/10/2026 | 3 | Ecrã da tripulação: escolher a viatura, ver a missão e o caminho até ao local |
+| 26/10/2026 | 4 | Atualizações automáticas |
+| 26/10/2026 | 5 | Preparar o sistema para ser instalado automaticamente na cloud (GitHub Actions, Kubernetes) |
+| 30/10/2026 | 6 | Sistema a funcionar em 3 máquinas na cloud (Azure, k3s) |
+| 30/10/2026 | 7 | Base de dados com cópias em várias máquinas (CloudNativePG) |
+| 02/11/2026 | 8 | Acesso seguro e duas portas de entrada (HTTPS, Traefik) |
+| 02/11/2026 | 9 | Testes de falha |
+| 06/11/2026 | 10 | Relatório v2 e slides |
+| 09/11/2026 | 11 | Testes e guião para apresentação |
 
-## 11. Segurança, Tecnologias e Testes
+### 16.3 Riscos
 
+| Risco | Probabilidade | Impacto | Mitigação |
+|---|---|---|---|
+| Complexidade do Kubernetes atrasa o projeto | Média | Alto | **Plano alternativo com Docker Compose**, mantendo as mesmas réplicas |
+| Grafo de estradas demasiado grande para o A* | Média | Médio | Limitar a região da demonstração |
+| CSP lento com muitas ocorrências pendentes | Baixa | Médio | Tempo limite, devolvendo a melhor solução encontrada |
 
+---
 
-O sistema utiliza autenticação JWT, palavras-passe com *hash* (bcrypt), e cifra de dados pessoais (RGPD). As tecnologias incluem React e Leaflet no Frontend, FastAPI e OSMnx no Backend, CloudNativePG para dados e Docker/k3s para infraestrutura. Os guiões de teste validam o registo central, reatribuição dinâmica por gravidade, cenários de concorrência e resiliência a falhas de pods.
+## 17. Conclusão
 
+A **Kairos** pretende demonstrar como uma arquitetura distribuída e tolerante a faltas, combinada com algoritmos de Inteligência Artificial, pode suportar um sistema crítico como uma central de despacho de emergências.
 
+Na primeira fase (E1) foram definidos o problema, os requisitos, a arquitetura e os cenários de falha a demonstrar. Nesta **2.ª entrega (Protótipo)**, a equipa implementou com sucesso o sistema prático:
+- Configuração do Frontend (mapa do operador e ecrã de tripulação) e atualizações automáticas.
+- Automação via CI/CD e configuração inicial do cluster em cloud (Azure, k3s, BD CloudNativePG).
+- Acesso seguro e planeamento rigoroso para testes de falha.
 
-## 12. Dados de Investigação e Levantamento de Requisitos
+Na **3.ª e última entrega**, será concluída a segurança total da aplicação, refinamento de frontend e execução de todos os testes de tolerância a falhas para a demonstração final.
 
+---
 
+## 18. Bibliografia
 
-### 12.1. Guião de Entrevista e Teste de Protótipo
-
-
-
-Para alinhar a plataforma com a realidade das equipas de emergência, foi estruturado o seguinte guião de investigação:
-
-* Como recebem a missão e que informações lhes são passadas exatamente?
-
-* Existe alguma informação que vos costuma faltar quando saem?
-
-* Já tiveram de ligar para a central a confirmar dados?
-
-* Como escolhem o caminho? Usam GPS? Sistema próprio? Confiam nele?
-
-* Já foram para a morada errada ou demoraram a encontrar o local? O que aconteceu?
-
-* Como avisam a central de que saíram, de que chegaram ou de que ficaram livres?
-
-* No início do turno, como é que a central sabe quem está em que viatura?
-
-* Já foram desviados a caminho de uma ocorrência para outra mais grave? Como vos avisaram?
-
-
-
-**Teste de Protótipo:**
-
-* "Começou o turno. Entre e fique com a AMB-LX-02" | *Percebe o ecrã de escolher viatura?*
-
-* (Criamos uma ocorrência) "Chegou-lhe uma missão. O que é e para onde vai?" | *Repara na missão sozinho? Percebe a gravidade, a morada e a rota?*
-
-* Saiu do quartel → Chegou ao local → Terminou | *Encontra os botões? A ordem faz sentido?*
-
-* "Acabou o turno" | *Sabe como sair?*
-
-
-
-**Feedback Pós-Teste:** Que informação aqui não lhe serve e qual falta? Sente que este sistema auxiliaria ou seria uma "coisa" a mais? Que funcionalidades gostava que fossem adicionadas?
-
-
-
-### 12.2. Termo de Consentimento Informado
-
-
-
-*Projeto Kairos - Universidade Europeia · Licenciatura em Engenharia Informática · 2026/2027 · Grupo 08*
-
-* **Objetivo:** Perceber como as equipas de emergência recebem e executam missões, e testar um protótipo de aplicação de despacho.
-
-* **O que envolve:** Uma entrevista de ~40 min e um teste do protótipo num portátil/telemóvel.
-
-* **Participação voluntária:** Pode recusar responder a qualquer pergunta e desistir a qualquer momento, sem dar justificação.
-
-* **Dados:** As respostas são usadas apenas para fins académicos e não são partilhadas com a sua entidade empregadora. Não serão recolhidos dados de doentes nem de ocorrências reais.
-
-
-
-## 13. Trabalho Futuro
-
-
-
-1. **Recuperar mais depressa:** Baixar os ~140s do tempo de recuperação no teste da falha da BD primária.
-
-2. **JWT e permissões:** Cada pedido autenticado validado estritamente, garantindo que o operador só vê o seu distrito.
-
-3. **Dados da vítima cifrados:** Nome e descrição cifrados na base de dados para conformidade absoluta com o RGPD.
-
-4. **Load Balancer:** Configuração de um IP único à frente das 3 máquinas (ex: Google Cloud).
-
-5. **Página da vítima:** Portal onde quem pediu socorro pode acompanhar a chegada da ambulância através de um link.
-
-
-
-## 14. Conclusão
-
-
-
-O projeto Kairos demonstra como uma arquitetura distribuída e tolerante a faltas pode suportar um sistema crítico de emergências. Ao combinar a resiliência do Kubernetes e do PostgreSQL síncrono com a tomada de decisão otimizada do CSP e Algoritmo A\*, o sistema elimina os pontos únicos de falha e substitui a incerteza do despacho manual por decisões matemáticas transparentes e instantâneas que privilegiam a vida humana.
+[1] Kubernetes Documentation – https://kubernetes.io/docs  
+[2] K3s Documentation – https://docs.k3s.io  
+[3] PostgreSQL Documentation – https://www.postgresql.org/docs  
+[4] CloudNativePG Documentation – https://cloudnative-pg.io/documentation  
+[5] FastAPI Documentation – https://fastapi.tiangolo.com  
+[6] OpenStreetMap – https://www.openstreetmap.org  
+[7] Leaflet – https://leafletjs.com  
+[8] Boeing, G. (2017). *OSMnx: New methods for acquiring, constructing, analyzing, and visualizing complex street networks*. Computers, Environment and Urban Systems, 65, 126–139.  
+[9] Russell, S., & Norvig, P. (2021). *Artificial Intelligence: A Modern Approach* (4.ª ed.). Pearson.  
+[10] Coulouris, G., Dollimore, J., Kindberg, T., & Blair, G. (2011). *Distributed Systems: Concepts and Design* (5.ª ed.). Addison-Wesley.  
+[11] Mackway-Jones, K., Marsden, J., & Windle, J. (Eds.). (2014). *Emergency Triage: Manchester Triage Group* (3.ª ed.). Wiley-Blackwell.  
+[12] INEM – Instituto Nacional de Emergência Médica – https://www.inem.pt
