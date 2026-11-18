@@ -581,6 +581,10 @@ Em todos os testes **nenhuma ocorrência confirmada foi perdida**.
 | CSP lento com muitas ocorrências pendentes | Baixa | Médio | Tempo limite, devolvendo a melhor solução encontrada, limite inferior no branch and bound | Mitigado (16.2) |
 | Failover lento na queda da máquina da primária | Média | Alto | Ajustar os parâmetros TCP dos pods da BD | Planeado para a E3 |
 
+## 17.4 Gráfico de Gantt  
+
+<img src="Gantt_15_11.svg" alt="Gantt V1" width="700">
+
 ---
 
 ## 18. Conclusão
