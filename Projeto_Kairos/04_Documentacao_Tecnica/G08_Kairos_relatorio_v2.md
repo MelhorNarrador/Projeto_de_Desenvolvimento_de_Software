@@ -25,13 +25,13 @@ sistemas distribuídos, tolerância a faltas, despacho de emergências, Kubernet
 
 ## 1. Introdução
 
-Este relatório apresenta a segunda versão do projeto **Kairos**, desenvolvido no âmbito do projeto multidisciplinar de 5.º semestre da Licenciatura em Engenharia Informática. É uma extensão do relatório v1: mantém a conceção (secções 2 a 14), atualizada com as decisões tomadas durante a implementação, e acrescenta o desenvolvimento do protótipo, os testes realizados e os seus resultados (secções 15 a 17).
+Este relatório apresenta a segunda versão do projeto **Kairos**, desenvolvido no âmbito do projeto multidisciplinar de 5.º semestre da Licenciatura em Engenharia Informática. É uma extensão do relatório v1, mantém a conceção (secções 2 a 14), atualizada com as decisões tomadas durante a implementação, e acrescenta o desenvolvimento do protótipo, os testes realizados e os seus resultados (secções 15 a 17).
 
 A **Kairos** é uma plataforma web de despacho de emergências que recebe ocorrências, acompanha em tempo real a posição e o estado das unidades de socorro e **atribui automaticamente a unidade mais adequada a cada ocorrência**, calculando a rota mais rápida até ao local.
 
-Por se tratar de um sistema crítico, a plataforma é construída sobre uma **arquitetura distribuída e tolerante a faltas**: todos os componentes estão replicados, e a falha de um servidor, de uma réplica da base de dados ou de uma máquina inteira não interrompe o serviço de forma permanente nem provoca a perda de ocorrências confirmadas.
+Por se tratar de um sistema crítico, a plataforma é construída sobre uma **arquitetura distribuída e tolerante a faltas**, todos os componentes estão replicados e, a falha de um servidor, de uma réplica da base de dados ou de uma máquina inteira não interrompe o serviço de forma permanente nem provoca a perda de ocorrências confirmadas.
 
-Esta **segunda entrega (Protótipo)** centra-se na implementação: API replicada com atribuição automática (A* e CSP), interfaces web para o operador e para a tripulação, atualizações em tempo real, construção automática das imagens (GitHub Actions), cluster k3s com três máquinas virtuais no **Google Cloud**, base de dados replicada com CloudNativePG, HTTPS e os primeiros testes de falha com métricas.
+Esta **segunda entrega (Protótipo)** centra-se na implementação, API replicada com atribuição automática (A* e CSP), interfaces web para o operador e para a tripulação, atualizações em tempo real, construção automática das imagens (GitHub Actions), cluster k3s com três máquinas virtuais no **Google Cloud**, base de dados replicada com CloudNativePG, HTTPS e os primeiros testes de falha com métricas.
 
 ---
 
@@ -83,9 +83,9 @@ Este relatório corresponde ao marco **Entrega 2 – Protótipo**.
 
 ---
 
-## 3. Descrição e Problema
+## 3. Problema
 
-Numa emergência, o tempo até à chegada do socorro é determinante. Em situações como uma paragem cardiorrespiratória, cada minuto de atraso reduz de forma significativa as hipóteses de sobrevivência, e parte desse tempo é gasto **antes de a unidade sair**, à espera de que a chamada chegue a quem despacha e a decidir que meio enviar e por onde.
+Numa emergência, o tempo até à chegada do socorro é determinante. Em situações como uma paragem cardiorrespiratória, cada minuto de atraso reduz de forma significativa as hipóteses de sobrevivência e, parte desse tempo é gasto **antes da unidade sair**, à espera que a chamada chegue a quem despacha e a decidir que meio enviar e por onde.
 
 Em muitos cenários esta decisão depende do operador, que escolhe a unidade com base na experiência e numa lista de meios disponíveis. Esta abordagem apresenta os seguintes problemas:
 
@@ -96,7 +96,7 @@ Em muitos cenários esta decisão depende do operador, que escolhe a unidade com
 | Toda a informação é comunicada **por rádio** | A informação pode perder-se ou ser mal entendida, e a tripulação não recebe a missão por escrito |
 | A rota depende do **conhecimento empírico do condutor** ou de aplicações como Waze | Numa zona que não conhece, o condutor pode escolher um caminho mais lento ou perder tempo a interagir com aplicações de GPS |
 | **Ligar a chamada a quem despacha** pode demorar | Quem pede socorro pode ficar 40 minutos ou mais à espera, sem saber se a ajuda vem |
-| Não existe **visão do conjunto** | Uma zona pode ficar sem unidades disponíveis sem que ninguém se aperceba, e uma ocorrência leve pode ficar com a unidade de que uma ocorrência crítica vai precisar logo a seguir |  
+| Não existe **visão do conjunto** | Uma zona pode ficar sem unidades disponíveis sem que ninguém se aperceba, e uma ocorrência leve pode ficar com a unidade que uma ocorrência crítica vai precisar logo a seguir |  
 
 A estes problemas soma-se um requisito técnico, uma central de emergência **não pode parar**. Se o servidor que a suporta falhar, as ocorrências deixam de ser registadas e atribuídas. Um sistema centralizado num único servidor representa um ponto único de falha inaceitável neste contexto.
 
@@ -118,12 +118,12 @@ A **Kairos** ataca estes problemas em duas frentes, **decidir melhor e mais depr
 
 ### 4.2 Motivação
 
-A escolha do tema nasce da experiência pessoal de um dos elementos do grupo. Quem já ligou para o 112 conhece a espera, primeiro, até a chamada ser ligada a quem decide o socorro, em certas ocasiões o mesmo ficou mais de 20 minutos à espera que a chamada conectasse ao CODU, depois, até a ambulância chegar. Em nenhum desses momentos quem pede ajuda sabe o que está a acontecer, nem se a ajuda vem a caminho.
+A escolha do tema nasce da experiência pessoal de um dos elementos do grupo. Quem já ligou para o 112 conhece a espera, primeiro, até a chamada ser ligada a quem decide o socorro, depois, até a ambulância chegar. Em nenhum desses momentos quem pede ajuda sabe o que está a acontecer, nem se a ajuda vem a caminho.
 
 A Kairos pretende resolver estes dois problemas:  
 
-- Eliminar o intermediário, em vez de a chamada ter de ser transferida para o CODU, o pedido chega diretamente a quem despacha e o sistema escolhe e envia de imediato o meio mais rápido.  
-- Dar informação a quem pede socorro, quem liga recebe o acesso a uma página com a sua ocorrência, onde pode ver a ambulância a aproximar-se e o tempo estimado de chegada, trocar a incerteza por informação não encurta a viagem, mas reduz a ansiedade de quem espera. Esta página está prevista para a 3.ª entrega.  
+- Eliminar o intermediário: em vez de a chamada ter de ser transferida para o CODU, o pedido chega diretamente a quem despacha e o sistema escolhe e envia de imediato o meio mais rápido.  
+- Dar informação a quem pede socorro: quem liga recebe o acesso a uma página com a sua ocorrência, onde pode ver a ambulância a aproximar-se e o tempo estimado de chegada, trocar a incerteza por informação não encurta a viagem, mas reduz a ansiedade de quem espera. Esta página está prevista para a 3.ª entrega.  
 
 Os sistemas de despacho são um exemplo claro de sistema onde a **distribuição é necessária**, a disponibilidade e a integridade dos dados têm impacto direto na vida das pessoas. Este contexto permite trabalhar, de forma justificada, todos os conceitos centrais de sistemas distribuídos (replicação, consistência, deteção de falhas e recuperação), ao mesmo tempo que oferece problemas reais para as restantes UCs.  
 
@@ -133,8 +133,8 @@ Os sistemas de despacho são um exemplo claro de sistema onde a **distribuição
 
 | Ator | Descrição | Necessidade principal |
 |---|---|---|
-| **Operador da central** | Recebe chamadas e regista ocorrências, supervisiona o estado de todas as unidades do seu distrito | Ver rapidamente que unidade foi enviada e quando chega |
-| **Unidade de socorro** | Tripulação da ambulância, na aplicação, quem conduz a viatura | Receber a missão, a rota e atualizar o seu estado (a caminho, no local, disponível) |
+| **Operador da central** | Recebe chamadas e regista ocorrências, supervisiona o estado de todas as unidades do seu distrito | Enviar rapidamente unidades |
+| **Unidade de socorro** | Tripulação da ambulância, quem conduz a viatura | Receber a missão, a rota e atualizar o seu estado (a caminho, no local, disponível) |
 | **Quem pede socorro** | Vítima ou quem liga para a emergência | Saber que a ajuda vem e quando chega (página de acompanhamento prevista para a E3) |
 | **Administrador** | Gere utilizadores e unidades | Configurar o sistema e consultar o registo de auditoria |
 
@@ -514,8 +514,7 @@ O teste de carga encontrou dois problemas, ambos corrigidos:
 |---|---|
 | F1, reduzir a API de 3 para 2 e para 1 réplica | **0 pedidos falhados** |
 | Arranque a frio das 3 VMs | Sistema volta sozinho (o frontend reinicia uma vez enquanto o DNS do cluster arranca) |
-| F4, desligar à força a VM da primária | Promoção em ~45s, **aplicação de volta em ~140s**, a antiga primária volta como réplica em ~32s |
-| F4 (repetição, 10/11) | Leituras de volta em ~70s, escritas em ~165s. Uma ocorrência criada durante a falha ficou à espera e **foi gravada** (sem perda) |
+| F4, desligar à força a VM da primária | Leituras de volta em ~70s, escritas em ~165s. Uma ocorrência criada durante a falha ficou à espera e **foi gravada** (sem perda), a antiga primária volta como réplica em ~32s |
 
 Em todos os testes **nenhuma ocorrência confirmada foi perdida**.
 
@@ -536,8 +535,8 @@ Em todos os testes **nenhuma ocorrência confirmada foi perdida**.
 
 | Limitação | Plano |
 |---|---|
-| O domínio HTTPS aponta só para a primeira VM, se ela cair, o acesso é pelos IPs das outras (HTTP) | E3, balanceador de carga do Google Cloud à frente das 3 VMs |
-| Escritas indisponíveis 1 a 3 minutos na queda da máquina da primária | E3, menos tentativas TCP nos pods da BD |
+| O domínio HTTPS aponta só para a primeira VM, se ela cair, o acesso é pelos IPs das outras (HTTP) | E3, load balancer do Google Cloud à frente das 3 VMs |
+| Escritas indisponíveis 1 a 3 minutos na queda da máquina com BD primária | E3, menos tentativas TCP nos pods da BD |
 | O servidor ainda confia no utilizador enviado no pedido (sem JWT) | E3, JWT + autorização por distrito em todas as consultas |
 | Dados das vítimas em claro na BD | E3, cifra do nome e da descrição |
 
@@ -567,7 +566,7 @@ Em todos os testes **nenhuma ocorrência confirmada foi perdida**.
 |---|---|
 | **Segurança** | JWT com perfil e distrito, autorização por distrito em todas as consultas, cifra do nome e da descrição da vítima |
 | **IA** | Reatribuição para ocorrências mais graves, apoio de distritos vizinhos, pré-seleção de candidatos por distância em linha reta (otimização) |
-| **Tolerância a faltas** | Balanceador de carga do Google Cloud, menos tentativas TCP nos pods da BD, *keepalives* na ligação de tempo real, chave de idempotência no registo de ocorrências, testes de falha automatizados |
+| **Tolerância a faltas** | Load balancer do Google Cloud, menos tentativas TCP nos pods da BD, *keepalives* na ligação de tempo real, chave de idempotência no registo de ocorrências, testes de falha automatizados |
 | **Interfaces** | Reescrita do frontend em React, página de acompanhamento para quem pede socorro, gestão de utilizadores e unidades (administrador) |
 | **Documentação** | Relatório final, demonstração e arquivo documental |
 
@@ -575,12 +574,12 @@ Em todos os testes **nenhuma ocorrência confirmada foi perdida**.
 
 | Risco | Probabilidade | Impacto | Mitigação | Estado |
 |---|---|---|---|---|
-| Complexidade do Kubernetes atrasa o projeto | Média | Alto | Ensaio local em k3d antes da cloud, plano alternativo com Docker Compose | Ultrapassado, cluster a funcionar desde 07/11 |
+| Complexidade do Kubernetes atrasar o projeto | Média | Alto | Ensaio local em k3d antes da cloud, plano alternativo com Docker Compose | Ultrapassado, cluster a funcionar desde 07/11 |
 | Cloud indisponível (Azure não disponível para contas IADE) | Ocorreu | Alto | Google Cloud (período gratuito), plano B com 3 portáteis do grupo, plano C com k3d | Resolvido com o Google Cloud |
 | Créditos da cloud esgotados antes da E3 | Baixa | Médio | Alerta de orçamento, VMs paradas quando não estão em uso | Controlado |
 | Grafo de estradas demasiado grande para o A* | Média | Médio | Limitar a região da demonstração | Resolvido, 14–36ms por rota |
 | CSP lento com muitas ocorrências pendentes | Baixa | Médio | Tempo limite, devolvendo a melhor solução encontrada, limite inferior no branch and bound | Mitigado (16.2) |
-| Failover lento na queda da máquina da primária | Média | Médio | Ajustar os parâmetros TCP dos pods da BD | Planeado para a E3 |
+| Failover lento na queda da máquina da primária | Média | Alto | Ajustar os parâmetros TCP dos pods da BD | Planeado para a E3 |
 
 ---
 
@@ -588,7 +587,7 @@ Em todos os testes **nenhuma ocorrência confirmada foi perdida**.
 
 A **Kairos** pretende demonstrar como uma arquitetura distribuída e tolerante a faltas, combinada com algoritmos de Inteligência Artificial, pode suportar um sistema crítico como uma central de despacho de emergências.
 
-Na primeira fase (E1) foram definidos o problema, os requisitos, a arquitetura, o modelo de faltas e os cenários de falha a demonstrar. Nesta **2.ª entrega (Protótipo)**, a equipa implementou e testou o sistema:
+Na primeira fase (E1) foram definidos o problema, os requisitos, a arquitetura, o modelo de faltas e os cenários de falha a demonstrar. Nesta **2.ª entrega (Protótipo)**, o grupo implementou e testou o sistema:
 
 - **Despacho automático** com A* (14–36ms por rota, heurística comprovadamente consistente) e CSP com MRV e branch and bound, sem atribuições duplicadas com 3 réplicas da API.
 - **Interfaces** do operador e da tripulação, com **atualizações em tempo real** em ~8ms.
