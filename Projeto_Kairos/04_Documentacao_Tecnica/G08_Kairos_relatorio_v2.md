@@ -221,7 +221,7 @@ Os tempos-alvo e os pesos são **definidos pelo grupo para este projeto**. Os te
 
 ### 8.1 Visão Geral
 
-<img src="Diagrama-de-Arquitetura-v2.png" alt="Diagrama de Arquitetura v2" width="700">  
+<img src="Diagrama-Arquitetura-v2.png" alt="Diagrama de Arquitetura v2" width="700">  
 
 O sistema corre num cluster **Kubernetes (k3s)** com **três nós**, cada um numa máquina virtual distinta do **Google Cloud** (3× e2-medium, região europe-southwest1, uma por zona: a, b e c). Todos os nós executam serviços aplicacionais. Os três nós são **servidores** k3s com etcd embutido, pelo que a perda de qualquer nó não compromete a gestão do cluster.
 
