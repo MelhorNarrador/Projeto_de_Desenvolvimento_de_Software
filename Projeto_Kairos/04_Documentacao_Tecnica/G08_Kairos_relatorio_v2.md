@@ -195,7 +195,7 @@ O sistema é pensado para ser instalado **por país** (uma instalação por paí
 
 ### 7.3 Casos de Uso
 
-<img src="casos_de_uso_V1.svg" alt="Diagrama de casos de uso v1" width="700">
+<img src="Casos-de-Uso-Kairos-v2.png" alt="Diagrama de casos de uso v1" width="700">
 
 ### 7.4 Modelo de Domínio
 
