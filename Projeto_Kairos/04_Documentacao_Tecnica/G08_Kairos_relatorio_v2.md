@@ -199,7 +199,7 @@ O sistema é pensado para ser instalado **por país** (uma instalação por paí
 
 ### 7.4 Modelo de Domínio
 
-<img src="uml_dominio_V1.svg" alt="Diagrama de domínio UML v1" width="700">
+<img src="Modelo-de-Domínio-Kairos-V2" alt="Diagrama de domínio UML v1" width="700">
 
 ### 7.5 Escala de Gravidade
 
