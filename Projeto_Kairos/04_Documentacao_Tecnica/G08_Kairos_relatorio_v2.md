@@ -195,11 +195,11 @@ O sistema é pensado para ser instalado **por país** (uma instalação por paí
 
 ### 7.3 Casos de Uso
 
-<img src="Casos-de-Uso-Kairos-v2.png" alt="Diagrama de casos de uso v1" width="700">
+<img src="Casos-de-Uso-Kairos-v2.png" alt="Diagrama de casos de uso v2" width="700">
 
 ### 7.4 Modelo de Domínio
 
-<img src="Modelo-de-Domínio-Kairos-V2" alt="Diagrama de domínio UML v1" width="700">
+<img src="Modelo-de-Domínio-Kairos-V2.png" alt="Diagrama de domínio UML v2" width="700">
 
 ### 7.5 Escala de Gravidade
 
